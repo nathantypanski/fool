@@ -1,0 +1,19 @@
+#!/usr/bin/env python2
+
+"""A test suite that runs all tests for pyfakefs at once."""
+
+import unittest
+import xdg_test
+
+class AllTests(unittest.TestSuite):
+    """A test suite that runs all tests at once."""
+
+    def suite(self):
+        loader = unittest.defaultTestLoader
+        self.addTests([
+            loader.loadTestsFromModule(xdg_test),
+        ])
+        return self
+
+if __name__ == '__main__':
+    unittest.TextTestRunner(verbosity=2).run(AllTests().suite())

@@ -30,13 +30,23 @@ class XDG(object):
     def data_home(self):
         return self._xdg_env('_data_home', 'XDG_DATA_HOME', '/.local/share')
 
+    @data_home.setter
+    def data_home(self, value):
+        self._data_home = value
+
     @property
     def config_home(self):
         return self._xdg_env('_config_home', 'XDG_CONFIG_HOME', '/.config')
 
-class Configuration(object):
-    def __init__(self):
-        self.xdg = XDG()
+    @config_home.setter
+    def config_home(self, value):
+        self._config_home = value
+
+class XDGConfig(object):
+    def __init__(self, xdg=None):
+        if xdg is None:
+            xdg = XDG()
+        self.xdg = xdg
         self._config_name = 'fool'
         self._data_name = 'fool'
 

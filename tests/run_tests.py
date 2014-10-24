@@ -4,6 +4,7 @@
 
 import unittest
 import xdg_test
+import conf_test
 
 class AllTests(unittest.TestSuite):
     """A test suite that runs all tests at once."""
@@ -12,6 +13,7 @@ class AllTests(unittest.TestSuite):
         loader = unittest.defaultTestLoader
         self.addTests([
             loader.loadTestsFromModule(xdg_test),
+            loader.loadTestsFromModule(conf_test),
         ])
         return self
 

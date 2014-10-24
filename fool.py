@@ -17,12 +17,6 @@ def config(args):
                                                     dirs.data_dir)
         print(out)
 
-def get_current_dir():
-    return os.path.dirname(os.path.abspath(__file__))
-
-def get_fool_bin_dir():
-    return get_current_dir() + '/bin'
-
 def parse_args():
     args = argparse.ArgumentParser()
     subs = args.add_subparsers(help='sub-command help')

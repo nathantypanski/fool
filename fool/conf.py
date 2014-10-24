@@ -3,6 +3,7 @@
 import errno
 import os
 import os.path
+
 try:
     import ConfigParser
     configparser = ConfigParser
@@ -11,6 +12,7 @@ except ImportError:
 
 import fool.xdg
 import fool.group
+
 
 def create_subdirs(path):
     """Create necessary subdirectories leading up to path.
@@ -26,6 +28,7 @@ def create_subdirs(path):
             raise exception
         else:
             pass
+
 
 class ConfigDirectories(object):
     __shared_state = {}
@@ -79,6 +82,7 @@ class ConfigDirectories(object):
         """
         os.mkdir(self.data_dir, self.directory_mode)
 
+
 class ConfigFile(object):
     """A configuration file object.
 
@@ -109,6 +113,7 @@ class ConfigFile(object):
         """
         create_subdirs(self._path)
         os.mknod(self._path)
+
 
 def GroupConfig(ConfigFile):
     """Dotfile group configuration file.

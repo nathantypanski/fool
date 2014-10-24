@@ -6,9 +6,9 @@ bootstrap your dotfiles like a fool
 
 ## Features
 
-[ ] [XDG Base Directory](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html) conformance - manage your fool configs with fool
-[ ] Bootstrap git repositories
-[ ] Conflict detection for file changes (using Git)
+- [ ] [XDG Base Directory](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html) conformance - manage your fool configs with fool
+- [ ] Bootstrap git repositories
+- [ ] Conflict detection for file changes (using Git)
 
 ## FAQ
 

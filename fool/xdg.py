@@ -51,6 +51,10 @@ class XDGConfig(object):
         self._data_name = 'fool'
 
     @property
+    def home_dir(self):
+        return self.xdg.config_home
+
+    @property
     def config_dir(self):
         return self.xdg.config_home + '/' + self._config_name
 

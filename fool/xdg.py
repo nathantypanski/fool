@@ -2,11 +2,20 @@
 
 import os
 
-class XDG(object):
+class XDGConfig(object):
+    __shared_state = {}
+
     def __init__(self):
-        self._home = None
-        self._data_home = None
-        self._config_home = None
+        self.__dict__ = self.__shared_state
+        if not self.__shared_state:
+            self._home = None
+            self._data_home = None
+            self._config_home = None
+
+    @classmethod
+    def clear_state(cls):
+        """Clear the internal shared state of the directory configuration."""
+        cls.__shared_state.clear()
 
     @property
     def environ(self):
@@ -14,17 +23,11 @@ class XDG(object):
 
     @property
     def home(self):
-        return self.environ['HOME']
+        return self._xdg_env('_home', 'HOME', '')
 
-    def _xdg_env(self, attr, env, default):
-        if getattr(self, attr) is not None:
-            return getattr(self, attr)
-        else:
-            try:
-                setattr(self, attr, self.environ['XDG_DATA_HOME'])
-            except KeyError:
-                setattr(self, attr, self.home + default)
-            return getattr(self, attr)
+    @home.setter
+    def home(self, value):
+        self._home = value
 
     @property
     def data_home(self):
@@ -42,22 +45,12 @@ class XDG(object):
     def config_home(self, value):
         self._config_home = value
 
-class XDGConfig(object):
-    def __init__(self, xdg=None):
-        if xdg is None:
-            xdg = XDG()
-        self.xdg = xdg
-        self._config_name = 'fool'
-        self._data_name = 'fool'
-
-    @property
-    def home_dir(self):
-        return self.xdg.config_home
-
-    @property
-    def config_dir(self):
-        return self.xdg.config_home + '/' + self._config_name
-
-    @property
-    def data_dir(self):
-        return self.xdg.data_home + '/' + self._data_name
+    def _xdg_env(self, attr, env, default):
+        if getattr(self, attr) is not None:
+            return getattr(self, attr)
+        else:
+            try:
+                setattr(self, attr, self.environ[env])
+            except KeyError:
+                setattr(self, attr, self.home + default)
+            return getattr(self, attr)

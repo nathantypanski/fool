@@ -1,5 +1,6 @@
 """Fool configuration"""
 
+import collections
 import errno
 import os
 import os.path
@@ -122,7 +123,7 @@ class ConfigFile(object):
         os.mknod(self._path)
 
 
-class GroupConfig(ConfigFile):
+class GroupConfig(ConfigFile, collections.Set):
     """Dotfile group configuration file.
     """
     __shared_state = {}
@@ -142,5 +143,16 @@ class GroupConfig(ConfigFile):
         """Clear the internal shared state of the group configuration."""
         cls.__shared_state.clear()
 
-    def create_group(self, name, path):
-        self.groups.append(fool.group.Group(name, path))
+    def add_group(self, group):
+        if not isinstance(group, fool.group.Group):
+            raise TypeError('can only add groups')
+        self.groups.append(group)
+
+    def __contains__(self, item):
+        return item in self.groups
+
+    def __iter__(self):
+        return iter(self.groups)
+
+    def __len__(self):
+        return len(self.groups)

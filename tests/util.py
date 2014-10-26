@@ -19,9 +19,12 @@ def temporary_directory(*args, **kwargs):
 @contextlib.contextmanager
 def temporary_config(*args, **kwargs):
     """ Create a temporary XDG configuration """
+    borg_objects = [fool.xdg.XDGConfig,
+                    fool.conf.ConfigDirectories,
+                    fool.conf.GroupConfig]
+    clear_state = lambda o: o.clear_state()
     try:
-        fool.xdg.XDGConfig.clear_state()
-        fool.conf.ConfigDirectories.clear_state()
+        map(clear_state, borg_objects)
         with temporary_directory() as tempdir:
             xdg = fool.xdg.XDGConfig()
             xdg.home = tempdir
@@ -30,5 +33,4 @@ def temporary_config(*args, **kwargs):
             assert not xdg.data_home.startswith(os.environ['HOME'])
             yield xdg
     finally:
-        fool.xdg.XDGConfig.clear_state()
-        fool.conf.ConfigDirectories.clear_state()
+        map(clear_state, borg_objects)

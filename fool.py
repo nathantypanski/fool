@@ -4,6 +4,7 @@
 from __future__ import print_function
 
 import argparse
+import sys
 
 import fool.conf
 import fool.git
@@ -16,8 +17,11 @@ def fool_config_check(args):
 
 def fool_group_init(args):
     print('Creating new group {}'.format(args.name))
+    print('    source: {}'.format(args.source))
+    print('    dest: {}'.format(args.dest))
 
 def parse_args():
+    xdg_config = fool.xdg.XDGConfig()
     parent_parser = argparse.ArgumentParser(add_help=False)
     main_parser = argparse.ArgumentParser()
     service_subparsers = main_parser.add_subparsers(title='service', dest='service_command')
@@ -26,6 +30,9 @@ def parse_args():
     group_init = group_subparser.add_parser('init', help='create a new group',
                         parents=[parent_parser])
     group_init.add_argument('name', help='name of group')
+    group_init.add_argument('-s', '--source', help='source folder for group')
+    group_init.add_argument('-d', '--dest', help='destination folder for group',
+                            default=xdg_config.home)
     group_init.set_defaults(func=fool_group_init)
     conf_parser = service_subparsers.add_parser('config', help='fool config', parents=[parent_parser])
     conf_subparser = conf_parser.add_subparsers(title='conf actions', dest='action_command')

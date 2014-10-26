@@ -89,9 +89,19 @@ class GroupConfig(fool.conf.ConfigFile,
         return len(self.groups)
 
     def add(self, group):
+        """Add a group to the GroupConfig.
+
+        Args:
+           group: a Group object to be added.
+        """
         self[group.name] = group
 
     def discard(self, group):
+        """Remove a group from the GroupConfig.
+
+        Args:
+           group: a Group object to be deleted.
+        """
         del self[group]
 
     def prepare_write(self):
@@ -107,13 +117,11 @@ class Group(object):
     """Fool file group.
 
     Args:
-
         name: unique name of this group
         source: source folder for this group
 
     Keyword args:
-
-         dest: destination directory for these files.
+         dest: destination directory for these files. Defaults to XDG home.
     """
     def __init__(self, name, source, destination=None):
         xdg_config = fool.xdg.XDGConfig()

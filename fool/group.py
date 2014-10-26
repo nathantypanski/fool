@@ -18,8 +18,11 @@ class GroupConfig(fool.conf.ConfigFile,
         if not self.__shared_state:
             self.config_directories = fool.conf.ConfigDirectories()
             if groups is None:
-                groups = {}
-            self.groups = groups
+                self.groups = {}
+            elif isinstance(groups, dict):
+                self.groups = {key: val for key, val in groups.items()}
+            else:
+                self.groups = {group.name: group for group in groups}
         super(GroupConfig, self).__init__('groups',
                                           self.config_directories.config_dir)
 
@@ -79,11 +82,8 @@ class Group(object):
     """
     def __init__(self, name, source, dest=None):
         xdg_config = fool.xdg.XDGConfig()
-        group_config = GroupConfig()
-        if name in group_config:
-            raise ValueError('A group already exists with that name!')
         self.name = name
         self.source = source
         if dest is None:
             dest = xdg_config.home
-        group_config.add(self)
+        self.dest = dest

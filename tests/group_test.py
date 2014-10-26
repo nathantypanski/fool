@@ -15,5 +15,24 @@ class UnitTest(unittest.TestCase):
             grp = fool.group.Group('Group', group_source)
             self.assertEqual(grp.name, 'Group')
             self.assertEqual(grp.source, group_source)
+            group_config.add(grp)
             self.assertTrue(grp in group_config)
             self.assertTrue(grp.name in group_config)
+
+    def test_create_group_from_iterable(self):
+        with util.temporary_config() as xdg_config:
+            grp_a_src = os.path.join(xdg_config.home, 'a')
+            grp_a = fool.group.Group('grpa', grp_a_src)
+            grp_b_src = os.path.join(xdg_config.home, 'b')
+            grp_b = fool.group.Group('grpb', grp_a_src)
+            group_config = fool.group.GroupConfig([grp_a, grp_b])
+            self.assertEqual(len(group_config), 2)
+            self.assertEqual(group_config['grpa'], grp_a)
+            self.assertEqual(group_config['grpb'], grp_b)
+
+    def test_write_one_group_to_file(self):
+        with util.temporary_config() as xdg_config:
+            group_config = fool.group.GroupConfig()
+            group_source = os.path.join(xdg_config.home, 'test')
+            grp = fool.group.Group('Group', group_source)
+            group_config.write()

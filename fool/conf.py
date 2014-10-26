@@ -122,7 +122,7 @@ class ConfigFile(object):
         os.mknod(self._path)
 
 
-def GroupConfig(ConfigFile):
+class GroupConfig(ConfigFile):
     """Dotfile group configuration file.
     """
     __shared_state = {}

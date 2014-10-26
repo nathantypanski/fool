@@ -53,7 +53,7 @@ class UnitTest(unittest.TestCase):
         with util.temporary_directory() as tempdir:
             conf_file = fool.conf.ConfigFile('world', tempdir)
             self.assertFalse(conf_file.exists)
-            conf_file.create()
+            conf_file.write()
             self.assertTrue(conf_file.exists)
             self.assertTrue(os.path.exists(os.path.join(tempdir, 'world')))
             self.assertTrue(os.path.isfile(os.path.join(tempdir, 'world')))
@@ -62,7 +62,7 @@ class UnitTest(unittest.TestCase):
         with util.temporary_directory() as tempdir:
             conf_file = fool.conf.ConfigFile('a/b', tempdir)
             self.assertFalse(conf_file.exists)
-            conf_file.create()
+            conf_file.write()
             self.assertTrue(conf_file.exists)
             self.assertTrue(os.path.exists(os.path.join(tempdir, 'a', 'b')))
             self.assertTrue(os.path.isfile(os.path.join(tempdir, 'a', 'b')))

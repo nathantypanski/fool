@@ -106,6 +106,14 @@ class ConfigFile(object):
             self._path = path
         self.configparser = configparser.SafeConfigParser()
 
+    def _clear_config_parser(self):
+        """Clear and return the new config parser for this configfile"""
+        self.configparser = configparser.SafeConfigParser()
+        return self.configparser
+
+    def prepare_write(self):
+        pass
+
     @property
     def path(self):
         return self._path
@@ -115,9 +123,10 @@ class ConfigFile(object):
         """True if the configuration file exists"""
         return os.path.exists(self._path)
 
-    def create(self):
+    def write(self):
         """Create an empty configuration file if it does not exist.
         """
+        self.prepare_write()
         create_subdirs(self._path)
         with open(self.path, 'wb') as configfile:
             self.configparser.write(configfile)

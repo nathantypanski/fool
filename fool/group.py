@@ -67,6 +67,14 @@ class GroupConfig(fool.conf.ConfigFile,
     def discard(self, group):
         del self[group]
 
+    def prepare_write(self):
+        config = self._clear_config_parser()
+        for name, group in self.items():
+            section = 'group.{}'.format(name)
+            config.add_section(section)
+            config.set(section, 'source', group.source)
+            config.set(section, 'dest', group.dest)
+
 
 class Group(object):
     """Fool file group.

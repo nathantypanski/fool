@@ -1,6 +1,7 @@
 """fool file groups."""
 
 import collections
+import re
 
 import fool.conf
 import fool.xdg
@@ -30,6 +31,32 @@ class GroupConfig(fool.conf.ConfigFile,
     def clear_state(cls):
         """Clear the internal shared state of the group configuration."""
         cls.__shared_state.clear()
+
+    @classmethod
+    def from_config_file(cls, config):
+        """Rebuild the GroupConfig from a supplied ConfigParser.
+
+        If successful, the state of the group config will be reset.
+
+        Args:
+            config: ConfigParser orbject containing group definitions.
+
+        Returns:
+            New GroupConfig object with settings from config file.
+        """
+        groupmatch = re.compile(r'group\.(.*)')
+        groups = []
+        for section in config.sections():
+            try:
+                match = groupmatch.match(section)
+                name = match.group(1)
+                source = config.get(section, 'source')
+                destination = config.get(section, 'destination')
+                groups.append(Group(name, source, destination))
+            except TypeError:
+                pass # not a group
+        cls.clear_state()
+        return GroupConfig(groups)
 
     def __getitem__(self, group):
         """Return the group associated with a given name."""
@@ -73,7 +100,7 @@ class GroupConfig(fool.conf.ConfigFile,
             section = 'group.{}'.format(name)
             config.add_section(section)
             config.set(section, 'source', group.source)
-            config.set(section, 'dest', group.dest)
+            config.set(section, 'destination', group.destination)
 
 
 class Group(object):
@@ -88,10 +115,10 @@ class Group(object):
 
          dest: destination directory for these files.
     """
-    def __init__(self, name, source, dest=None):
+    def __init__(self, name, source, destination=None):
         xdg_config = fool.xdg.XDGConfig()
         self.name = name
         self.source = source
-        if dest is None:
-            dest = xdg_config.home
-        self.dest = dest
+        if destination is None:
+            destination = xdg_config.home
+        self.destination = destination

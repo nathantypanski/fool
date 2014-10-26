@@ -10,7 +10,7 @@ class UnitTest(unittest.TestCase):
 
     def test_group_with_name_and_path(self):
         with util.temporary_config() as xdg_config:
-            group_config = fool.conf.GroupConfig()
+            group_config = fool.group.GroupConfig()
             group_source = os.path.join(xdg_config.home, 'test')
             grp = fool.group.Group('Group', group_source)
             self.assertEqual(grp.name, 'Group')

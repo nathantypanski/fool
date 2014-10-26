@@ -7,6 +7,7 @@ import os
 
 import fool.xdg
 import fool.conf
+import fool.group
 
 @contextlib.contextmanager
 def temporary_directory(*args, **kwargs):
@@ -21,7 +22,7 @@ def temporary_config(*args, **kwargs):
     """ Create a temporary XDG configuration """
     borg_objects = [fool.xdg.XDGConfig,
                     fool.conf.ConfigDirectories,
-                    fool.conf.GroupConfig]
+                    fool.group.GroupConfig]
     clear_state = lambda o: o.clear_state()
     try:
         map(clear_state, borg_objects)

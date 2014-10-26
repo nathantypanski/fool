@@ -1,7 +1,69 @@
 """fool file groups."""
 
+import collections
+
 import fool.conf
 import fool.xdg
+
+
+class GroupConfig(fool.conf.ConfigFile,
+                  collections.MutableMapping,
+                  collections.MutableSet):
+    """Dotfile group configuration file.
+    """
+    __shared_state = {}
+
+    def __init__(self, groups=None):
+        self.__dict__ = self.__shared_state
+        if not self.__shared_state:
+            self.config_directories = fool.conf.ConfigDirectories()
+            if groups is None:
+                groups = {}
+            self.groups = groups
+        super(GroupConfig, self).__init__('groups',
+                                          self.config_directories.config_dir)
+
+    @classmethod
+    def clear_state(cls):
+        """Clear the internal shared state of the group configuration."""
+        cls.__shared_state.clear()
+
+    def __getitem__(self, group):
+        """Return the group associated with a given name."""
+        if isinstance(group, fool.group.Group):
+            return self.groups[group.name]
+        else:
+            return self.groups[group]
+
+    def __setitem__(self, name, group):
+        """Return the group associated with a given name."""
+        if not isinstance(group, fool.group.Group):
+            raise TypeError('can only add groups')
+        if not isinstance(name, str):
+            raise TypeError('groups can only be keyed by strings')
+        self.groups[group.name] = group
+
+    def __delitem__(self, group):
+        del self.groups[group]
+
+    def __contains__(self, group):
+        if isinstance(group, fool.group.Group):
+            return group in self.groups.values()
+        else:
+            return group in self.groups
+
+    def __iter__(self):
+        return iter(self.groups)
+
+    def __len__(self):
+        return len(self.groups)
+
+    def add(self, group):
+        self[group.name] = group
+
+    def discard(self, group):
+        del self[group]
+
 
 class Group(object):
     """Fool file group.
@@ -17,7 +79,7 @@ class Group(object):
     """
     def __init__(self, name, source, dest=None):
         xdg_config = fool.xdg.XDGConfig()
-        group_config = fool.conf.GroupConfig()
+        group_config = GroupConfig()
         if name in group_config:
             raise ValueError('A group already exists with that name!')
         self.name = name

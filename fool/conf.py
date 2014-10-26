@@ -1,6 +1,5 @@
 """Fool configuration"""
 
-import collections
 import errno
 import os
 import os.path
@@ -12,7 +11,6 @@ except ImportError:
     import configparser
 
 import fool.xdg
-import fool.group
 
 
 def create_subdirs(path):
@@ -106,6 +104,7 @@ class ConfigFile(object):
             self._path = os.path.join(directory, path)
         else:
             self._path = path
+        self.configparser = configparser.SafeConfigParser()
 
     @property
     def path(self):
@@ -120,59 +119,5 @@ class ConfigFile(object):
         """Create an empty configuration file if it does not exist.
         """
         create_subdirs(self._path)
-        os.mknod(self._path)
-
-
-class GroupConfig(ConfigFile, collections.MutableMapping, collections.MutableSet):
-    """Dotfile group configuration file.
-    """
-    __shared_state = {}
-
-    def __init__(self, groups=None, config_directories=None):
-        self.__dict__ = self.__shared_state
-        if not self.__shared_state:
-            if config_directories is None:
-                config_directories = ConfigDirectories()
-            self.config_directories = config_directories
-            if groups is None:
-                groups = {}
-            self.groups = groups
-
-    @classmethod
-    def clear_state(cls):
-        """Clear the internal shared state of the group configuration."""
-        cls.__shared_state.clear()
-
-    def __getitem__(self, group):
-        """Return the group associated with a given name."""
-        if isinstance(group, fool.group.Group):
-            return self.groups[group.name]
-        else:
-            return self.groups[group]
-
-    def __setitem__(self, name, group):
-        """Return the group associated with a given name."""
-        if not isinstance(group, fool.group.Group):
-            raise TypeError('can only add groups')
-        self.groups[group.name] = group
-
-    def __delitem__(self, group):
-        del self.groups[group]
-
-    def __contains__(self, group):
-        if isinstance(group, fool.group.Group):
-            return group in self.groups.values()
-        else:
-            return group in self.groups
-
-    def __iter__(self):
-        return iter(self.groups)
-
-    def __len__(self):
-        return len(self.groups)
-
-    def add(self, group):
-        self[group.name] = group
-
-    def discard(self, group):
-        del self[group]
+        with open(self.path, 'wb') as configfile:
+            self.configparser.write(configfile)

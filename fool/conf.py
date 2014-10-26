@@ -123,7 +123,7 @@ class ConfigFile(object):
         os.mknod(self._path)
 
 
-class GroupConfig(ConfigFile, collections.Set):
+class GroupConfig(ConfigFile, collections.MutableSet):
     """Dotfile group configuration file.
     """
     __shared_state = {}
@@ -135,18 +135,13 @@ class GroupConfig(ConfigFile, collections.Set):
                 config_directories = ConfigDirectories()
             self.config_directories = config_directories
             if groups is None:
-                groups = []
+                groups = set()
             self.groups = groups
 
     @classmethod
     def clear_state(cls):
         """Clear the internal shared state of the group configuration."""
         cls.__shared_state.clear()
-
-    def add_group(self, group):
-        if not isinstance(group, fool.group.Group):
-            raise TypeError('can only add groups')
-        self.groups.append(group)
 
     def __contains__(self, item):
         return item in self.groups
@@ -156,3 +151,11 @@ class GroupConfig(ConfigFile, collections.Set):
 
     def __len__(self):
         return len(self.groups)
+
+    def add(self, group):
+        if not isinstance(group, fool.group.Group):
+            raise TypeError('can only add groups')
+        self.groups.add(group)
+
+    def discard(self, group):
+        self.groups.discard(group)

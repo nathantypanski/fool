@@ -22,4 +22,4 @@ class Group(object):
         self.source = source
         if dest is None:
             dest = xdg_config.home
-        group_config.add_group(self)
+        group_config.add(self)

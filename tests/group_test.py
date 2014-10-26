@@ -16,3 +16,4 @@ class UnitTest(unittest.TestCase):
             self.assertEqual(grp.name, 'Group')
             self.assertEqual(grp.source, group_source)
             self.assertTrue(grp in group_config)
+            self.assertTrue(grp.name in group_config)

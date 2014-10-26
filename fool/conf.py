@@ -123,7 +123,7 @@ class ConfigFile(object):
         os.mknod(self._path)
 
 
-class GroupConfig(ConfigFile, collections.MutableSet):
+class GroupConfig(ConfigFile, collections.MutableMapping, collections.MutableSet):
     """Dotfile group configuration file.
     """
     __shared_state = {}
@@ -135,7 +135,7 @@ class GroupConfig(ConfigFile, collections.MutableSet):
                 config_directories = ConfigDirectories()
             self.config_directories = config_directories
             if groups is None:
-                groups = set()
+                groups = {}
             self.groups = groups
 
     @classmethod
@@ -143,8 +143,27 @@ class GroupConfig(ConfigFile, collections.MutableSet):
         """Clear the internal shared state of the group configuration."""
         cls.__shared_state.clear()
 
-    def __contains__(self, item):
-        return item in self.groups
+    def __getitem__(self, group):
+        """Return the group associated with a given name."""
+        if isinstance(group, fool.group.Group):
+            return self.groups[group.name]
+        else:
+            return self.groups[group]
+
+    def __setitem__(self, name, group):
+        """Return the group associated with a given name."""
+        if not isinstance(group, fool.group.Group):
+            raise TypeError('can only add groups')
+        self.groups[group.name] = group
+
+    def __delitem__(self, group):
+        del self.groups[group]
+
+    def __contains__(self, group):
+        if isinstance(group, fool.group.Group):
+            return group in self.groups.values()
+        else:
+            return group in self.groups
 
     def __iter__(self):
         return iter(self.groups)
@@ -153,9 +172,7 @@ class GroupConfig(ConfigFile, collections.MutableSet):
         return len(self.groups)
 
     def add(self, group):
-        if not isinstance(group, fool.group.Group):
-            raise TypeError('can only add groups')
-        self.groups.add(group)
+        self[group.name] = group
 
     def discard(self, group):
-        self.groups.discard(group)
+        del self[group]

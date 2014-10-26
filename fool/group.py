@@ -18,6 +18,8 @@ class Group(object):
     def __init__(self, name, source, dest=None):
         xdg_config = fool.xdg.XDGConfig()
         group_config = fool.conf.GroupConfig()
+        if name in group_config:
+            raise ValueError('A group already exists with that name!')
         self.name = name
         self.source = source
         if dest is None:

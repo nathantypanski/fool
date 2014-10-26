@@ -9,6 +9,7 @@ class XDGConfig(object):
         self.__dict__ = self.__shared_state
         if not self.__shared_state:
             self._home = None
+            self._custom_home = False
             self._data_home = None
             self._config_home = None
 
@@ -28,10 +29,11 @@ class XDGConfig(object):
     @home.setter
     def home(self, value):
         self._home = value
+        self._custom_home = True
 
     @property
     def data_home(self):
-        return self._xdg_env('_data_home', 'XDG_DATA_HOME', '/.local/share')
+        return self._xdg_env('_data_home', 'XDG_DATA_HOME', '.local/share')
 
     @data_home.setter
     def data_home(self, value):
@@ -39,7 +41,7 @@ class XDGConfig(object):
 
     @property
     def config_home(self):
-        return self._xdg_env('_config_home', 'XDG_CONFIG_HOME', '/.config')
+        return self._xdg_env('_config_home', 'XDG_CONFIG_HOME', '.config')
 
     @config_home.setter
     def config_home(self, value):
@@ -49,8 +51,11 @@ class XDGConfig(object):
         if getattr(self, attr) is not None:
             return getattr(self, attr)
         else:
-            try:
-                setattr(self, attr, self.environ[env])
-            except KeyError:
-                setattr(self, attr, self.home + default)
+            if not self._custom_home:
+                try:
+                    setattr(self, attr, self.environ[env])
+                except KeyError:
+                    setattr(self, attr, os.path.join(self.home, default))
+            else:
+                setattr(self, attr, os.path.join(self.home, default))
             return getattr(self, attr)

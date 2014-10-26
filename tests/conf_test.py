@@ -1,6 +1,7 @@
 """Tests for fool's configuration subsystem."""
 
 import os
+import os.path
 import unittest
 
 import fool.conf
@@ -10,30 +11,32 @@ import util
 
 class UnitTest(unittest.TestCase):
 
-    def setUp(self):
-        fool.conf.ConfigDirectories.clear_state()
-
     def test_config_data_home_ends_with_fool(self):
         conf = fool.conf.ConfigDirectories()
-        self.assertTrue(conf.data_dir.endswith('fool'))
+        _, name = os.path.split(conf.data_dir)
+        self.assertEqual(name, 'fool')
 
     def test_config_config_home_ends_with_fool(self):
         conf = fool.conf.ConfigDirectories()
-        self.assertTrue(conf.config_dir.endswith('fool'))
+        _, name = os.path.split(conf.config_dir)
+        self.assertEqual(name, 'fool')
 
     def test_create_config_dir(self):
         with util.temporary_config() as xdg_config:
             tempdir = xdg_config.home
             dirconf = fool.conf.ConfigDirectories()
-            self.assertEqual(dirconf.config_dir, tempdir + '/fool')
+            self.assertEqual(dirconf.config_dir,
+                             os.path.join(tempdir, '.config', 'fool'))
             self.assertFalse(os.path.exists(dirconf.config_dir))
             dirconf.create_config_dir()
             self.assertTrue(os.path.isdir(dirconf.config_dir))
 
     def test_create_data_dir(self):
         with util.temporary_config() as xdg_config:
+            tempdir = xdg_config.home
             dirconf = fool.conf.ConfigDirectories()
-            self.assertEqual(dirconf.data_dir, xdg_config.data_home + '/fool')
+            self.assertEqual(dirconf.data_dir,
+                             os.path.join(tempdir, '.local', 'share', 'fool'))
             self.assertFalse(os.path.exists(dirconf.data_dir))
             dirconf.create_data_dir()
             self.assertTrue(os.path.isdir(dirconf.data_dir))

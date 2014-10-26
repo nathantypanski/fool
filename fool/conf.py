@@ -54,7 +54,7 @@ class ConfigDirectories(object):
     @property
     def config_dir(self):
         """fool's config directory"""
-        return self.xdg_config.home + '/' + self._config_name
+        return self.xdg_config.config_home + '/' + self._config_name
 
     @property
     def data_dir(self):
@@ -72,6 +72,7 @@ class ConfigDirectories(object):
             OSError if the directory exists or could not be created.
         """
         create_subdirs(self.config_dir)
+        print('creating directory {}'.format(self.config_dir))
         os.mkdir(self.config_dir, self.directory_mode)
 
     def create_data_dir(self):
@@ -85,6 +86,7 @@ class ConfigDirectories(object):
             OSError if the directory exists or could not be created.
         """
         create_subdirs(self.data_dir)
+        print('creating directory {}'.format(self.data_dir))
         os.mkdir(self.data_dir, self.directory_mode)
 
 

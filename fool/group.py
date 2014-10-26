@@ -15,9 +15,9 @@ class Group(object):
          dest: destination directory for these files.
     """
     def __init__(self, name, source, dest=None):
-        xdg_config = fool.xdg.XDGConfig(xdg=xdg)
+        xdg_config = fool.xdg.XDGConfig()
         self.name = name
         self.source = source
         if dest is None:
-            dest = xdg_config.home_dir
+            dest = xdg_config.home
 

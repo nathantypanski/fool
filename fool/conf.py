@@ -137,5 +137,10 @@ class GroupConfig(ConfigFile):
                 groups = []
             self.groups = groups
 
+    @classmethod
+    def clear_state(cls):
+        """Clear the internal shared state of the group configuration."""
+        cls.__shared_state.clear()
+
     def create_group(self, name, path):
         self.groups.append(fool.group.Group(name, path))

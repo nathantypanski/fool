@@ -1,13 +1,14 @@
 """fool group test suite"""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import unittest
 import os
 
-try:
-    import ConfigParser
-    configparser = ConfigParser
-except ImportError:
-    import configparser
+from six.moves import configparser
+from six.moves import map
 
 import fool.group
 import util

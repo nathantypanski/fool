@@ -1,5 +1,9 @@
 """Tests for fool's configuration subsystem."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import os
 import os.path
 import unittest
@@ -55,8 +59,8 @@ class UnitTest(unittest.TestCase):
             self.assertFalse(conf_file.exists)
             conf_file.write()
             self.assertTrue(conf_file.exists)
-            self.assertTrue((fool.files.Path(tempdir) / 'world').exists)
-            self.assertTrue((fool.files.Path(tempdir) / 'world').isfile)
+            self.assertTrue((fool.files.FoolPath(tempdir) / 'world').exists)
+            self.assertTrue((fool.files.FoolPath(tempdir) / 'world').isfile)
 
     def test_can_create_new_configfile(self):
         with util.temporary_directory() as tempdir:

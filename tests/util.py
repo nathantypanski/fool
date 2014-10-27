@@ -1,9 +1,14 @@
 """fool test utility code"""
 
+from __future__ import division
+from __future__ import unicode_literals
+
 import contextlib
 import shutil
 import tempfile
 import os
+
+from six.moves import map
 
 import fool.xdg
 import fool.conf
@@ -14,7 +19,7 @@ import fool.files
 def temporary_directory(*args, **kwargs):
     d = tempfile.mkdtemp(*args, **kwargs)
     try:
-        yield fool.files.Path(d)
+        yield fool.files.FoolPath(d)
     finally:
         shutil.rmtree(d)
 
@@ -24,9 +29,9 @@ def temporary_config(*args, **kwargs):
     borg_objects = [fool.xdg.XDGConfig,
                     fool.conf.ConfigDirectories,
                     fool.group.GroupConfig]
-    clear_state = lambda o: o.clear_state()
     try:
-        map(clear_state, borg_objects)
+        for obj in borg_objects:
+            obj.clear_state()
         with temporary_directory() as tempdir:
             xdg = fool.xdg.XDGConfig()
             xdg.home = tempdir
@@ -35,4 +40,5 @@ def temporary_config(*args, **kwargs):
             assert not xdg.data_home.startswith(os.environ['HOME'])
             yield xdg
     finally:
-        map(clear_state, borg_objects)
+        for obj in borg_objects:
+            obj.clear_state()

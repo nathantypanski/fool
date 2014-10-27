@@ -2,7 +2,12 @@
 
 """A test suite that runs all tests for pyfakefs at once."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import unittest
+
 import xdg_test
 import conf_test
 import group_test
@@ -21,5 +26,8 @@ class AllTests(unittest.TestSuite):
         ])
         return self
 
-if __name__ == '__main__':
+def main():
     unittest.TextTestRunner(verbosity=2).run(AllTests().suite())
+
+if __name__ == '__main__':
+    main()

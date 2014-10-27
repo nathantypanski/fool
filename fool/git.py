@@ -1,6 +1,9 @@
 """ Git helper functions and all that jazz.
 """
 
+from __future__ import division
+from __future__ import unicode_literals
+
 import distutils.spawn
 import subprocess
 import os

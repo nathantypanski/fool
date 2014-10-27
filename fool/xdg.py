@@ -1,5 +1,7 @@
 """ XDG Base Directory Specification for fools """
 
+from __future__ import division
+
 import os
 
 import fool.files
@@ -30,7 +32,7 @@ class XDGConfig(object):
 
     @home.setter
     def home(self, value):
-        self._home = fool.files.Path(value)
+        self._home = fool.files.FoolPath(value)
         self._custom_home = True
 
     @property
@@ -39,7 +41,7 @@ class XDGConfig(object):
 
     @data_home.setter
     def data_home(self, value):
-        self._data_home = fool.files.Path(value)
+        self._data_home = fool.files.FoolPath(value)
 
     @property
     def config_home(self):
@@ -47,7 +49,7 @@ class XDGConfig(object):
 
     @config_home.setter
     def config_home(self, value):
-        self._config_home = fool.files.Path(value)
+        self._config_home = fool.files.FoolPath(value)
 
     def _xdg_env(self, attr, env, default):
         if getattr(self, attr) is not None:
@@ -55,7 +57,7 @@ class XDGConfig(object):
         else:
             if not self._custom_home:
                 try:
-                    setattr(self, attr, fool.files.Path(self.environ[env]))
+                    setattr(self, attr, fool.files.FoolPath(self.environ[env]))
                 except KeyError:
                     setattr(self, attr, self.home / default)
             else:

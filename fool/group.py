@@ -1,7 +1,11 @@
 """fool file groups."""
+from __future__ import division
+from __future__ import unicode_literals
 
 import collections
 import re
+
+import six
 
 import fool.conf
 import fool.xdg
@@ -70,7 +74,7 @@ class GroupConfig(fool.conf.ConfigFile,
         """Return the group associated with a given name."""
         if not isinstance(group, fool.group.Group):
             raise TypeError('can only add groups')
-        if not isinstance(name, str):
+        if not isinstance(name, six.string_types):
             raise TypeError('groups can only be keyed by strings')
         self.groups[group.name] = group
 
@@ -108,10 +112,10 @@ class GroupConfig(fool.conf.ConfigFile,
     def prepare_write(self):
         config = self._clear_config_parser()
         for name, group in self.items():
-            section = 'group.{}'.format(name)
+            section = six.text_type('group.{}'.format(name))
             config.add_section(section)
-            config.set(section, 'source', str(group.source))
-            config.set(section, 'destination', str(group.destination))
+            config.set(section, 'source', six.text_type(group.source))
+            config.set(section, 'destination', six.text_type(group.destination))
 
 
 class GroupObject(object):
@@ -126,8 +130,8 @@ class GroupObject(object):
     """
 
     def __init__(self, source, destination):
-        self.source = fool.files.Path(source)
-        self.destination = fool.files.Path(destination)
+        self.source = fool.files.FoolPath(source)
+        self.destination = fool.files.FoolPath(destination)
 
     @property
     def synced(self):
@@ -165,7 +169,7 @@ class Group(object):
     def __init__(self, name, source, destination=None):
         xdg_config = fool.xdg.XDGConfig()
         self.name = name
-        self.source = fool.files.Path(source)
+        self.source = fool.files.FoolPath(source)
         if destination is None:
             destination = xdg_config.home
         self.destination = destination

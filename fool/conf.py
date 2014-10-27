@@ -1,14 +1,15 @@
 """Fool configuration"""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import errno
 import os
 import os.path
 
-try:
-    import ConfigParser
-    configparser = ConfigParser
-except ImportError:
-    import configparser
+import six
+from six.moves import configparser
 
 import fool.xdg
 import fool.files
@@ -22,7 +23,7 @@ def create_subdirs(path):
             itself will not be created.
     """
     try:
-        os.makedirs(str(fool.files.Path(path).dirname))
+        os.makedirs(six.text_type(fool.files.FoolPath(path).dirname))
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise exception
@@ -102,9 +103,10 @@ class ConfigFile(object):
 
     def __init__(self, path, directory=None):
         if directory:
-            self._path = fool.files.Path(directory) / fool.files.Path(path)
+            self._path = (fool.files.FoolPath(directory)
+                          / fool.files.FoolPath(path))
         else:
-            self._path = fool.files.Path(path)
+            self._path = fool.files.FoolPath(path)
         self.configparser = configparser.SafeConfigParser()
 
     def _clear_config_parser(self):
@@ -129,5 +131,5 @@ class ConfigFile(object):
         """
         self.prepare_write()
         create_subdirs(self._path)
-        with self.path.open('wb') as configfile:
+        with self.path.open('w') as configfile:
             self.configparser.write(configfile)

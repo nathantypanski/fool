@@ -1,11 +1,18 @@
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import os
 import os.path
 
-class Path(object):
+import six
+
+class FoolPath(object):
     """Wrapper around os.path for ease of use."""
 
     def __init__(self, pathname):
-        if isinstance(pathname, Path):
+        if isinstance(pathname, FoolPath):
             pathname = pathname.pathname
         self._pathname = pathname
 
@@ -17,17 +24,17 @@ class Path(object):
     @property
     def abspath(self):
         """Absolute path."""
-        return Path(os.path.abspath(self.pathname))
+        return FoolPath(os.path.abspath(self.pathname))
 
     @property
     def basename(self):
         """The final component of this pathname."""
-        return Path(os.path.basename(self.pathname))
+        return FoolPath(os.path.basename(self.pathname))
 
     @property
     def dirname(self):
         """The directory component of this pathname."""
-        return Path(os.path.dirname(self.pathname))
+        return FoolPath(os.path.dirname(self.pathname))
 
     @property
     def exists(self):
@@ -51,7 +58,7 @@ class Path(object):
 
         If user or $HOME is unknown, do nothing.
         """
-        return Path(os.path.expanduser(self.pathname))
+        return FoolPath(os.path.expanduser(self.pathname))
 
     @property
     def expandvars(self):
@@ -59,7 +66,7 @@ class Path(object):
 
         Unknown variables are left unchanged.
         """
-        return Path(os.path.expandvars(self.pathname))
+        return FoolPath(os.path.expandvars(self.pathname))
 
     @property
     def atime(self):
@@ -107,12 +114,12 @@ class Path(object):
         return os.path.ismount(self.pathname)
 
     def join(self, *paths):
-        return Path(os.path.join(self.pathname, *paths))
+        return FoolPath(os.path.join(self.pathname, *paths))
 
     @property
     def normpath(self):
         """Normalize a path, eliminating double slashes, etc."""
-        return Path(os.path.normpath(self.pathname))
+        return FoolPath(os.path.normpath(self.pathname))
 
     def relpath(self, start=None):
         """Return a relative path either from the current directory or start.
@@ -122,12 +129,12 @@ class Path(object):
         """
         if start is None:
             start = os.curdir
-        return Path(os.path.relpath(self.pathname, str(start)))
+        return FoolPath(os.path.relpath(self.pathname, six.text_type(start)))
 
     @property
     def realpath(self):
         """Follow symlinks to the canonical location of this path."""
-        return Path(os.path.realpath(self.pathname))
+        return FoolPath(os.path.realpath(self.pathname))
 
     def open(self, *args, **kwargs):
         """Open this path, passing all arguments to open()."""
@@ -139,7 +146,7 @@ class Path(object):
 
     def split(self):
         head, tail = os.path.split(self.pathname)
-        return Path(head), Path(tail)
+        return FoolPath(head), FoolPath(tail)
 
     def splitext(self):
         head, tail = os.path.splitext(self.pathname)
@@ -147,7 +154,7 @@ class Path(object):
 
     def splitunc(self):
         head, tail = os.path.splitunc(self.pathname)
-        return Path(head), Path(tail)
+        return FoolPath(head), FoolPath(tail)
 
     def walk(self, topdown=True, onerror=None, followlinks=False):
         """Same as os.walk on this path."""
@@ -161,7 +168,7 @@ class Path(object):
         """
         for root, dirs, files in os.walk(self.pathname, topdown, onerror, followlinks):
             for name in files:
-                yield Path(root) / name
+                yield FoolPath(root) / name
 
     def mkdir(self):
         """Create a directory at this path."""
@@ -173,7 +180,7 @@ class Path(object):
 
     def symlink(self, link_name):
         """Create a symbolic link pointing to this path named link_name."""
-        return os.symlink(str(self.pathname), str(link_name))
+        return os.symlink(six.text_type(self.pathname), six.text_type(link_name))
 
     def startswith(self, value):
         return self.pathname.startswith(value)
@@ -191,13 +198,13 @@ class Path(object):
         return self.pathname
 
     def __repr__(self):
-        return 'Path("{}")'.format(self.pathname)
+        return 'FoolPath("{}")'.format(self.pathname)
 
     def __add__(self, other):
         return self / other
 
     def __eq__(self, other):
-        if isinstance(other, str):
+        if isinstance(other, six.string_types):
             return self.pathname == other
         else:
             try:
@@ -206,7 +213,10 @@ class Path(object):
                 return False
 
     def __div__(self, other):
-        if isinstance(other, Path):
-            return Path(os.path.join(self.pathname, other.pathname))
+        if isinstance(other, FoolPath):
+            return FoolPath(os.path.join(self.pathname, other.pathname))
         else:
-            return Path(os.path.join(self.pathname, other))
+            return FoolPath(os.path.join(self.pathname, other))
+
+    def __truediv__(self, other):
+        return self.__div__(other)

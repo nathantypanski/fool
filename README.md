@@ -1,4 +1,6 @@
-# fool [![Build Status](https://travis-ci.org/nathantypanski/fool.svg)](https://travis-ci.org/nathantypanski/fool)
+# fool
+[![Build Status](https://travis-ci.org/nathantypanski/fool.svg)](https://travis-ci.org/nathantypanski/fool)
+[![Documentation Status](https://readthedocs.org/projects/fool/badge/?version=latest)](https://readthedocs.org/projects/fool/?badge=latest)
 
 bootstrap your dotfiles like a fool
 

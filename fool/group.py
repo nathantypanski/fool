@@ -56,7 +56,6 @@ class GroupConfig(fool.conf.ConfigFile,
                 groups.append(Group(name, source, destination))
             except TypeError:
                 pass # not a group
-        print(config.sections())
         cls.clear_state()
         return GroupConfig(groups)
 

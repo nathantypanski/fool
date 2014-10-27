@@ -158,9 +158,9 @@ class FoolPath(object):
             for name in files:
                 yield FoolPath(root) / name
 
-    def mkdir(self):
+    def mkdir(self, mode=0o777):
         """Create a directory at this path."""
-        return os.mkdir(self.pathname)
+        return os.mkdir(self.pathname, mode)
 
     def mknod(self, mode=0o0600, device=0):
         """Create a directory at this path."""

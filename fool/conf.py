@@ -47,7 +47,6 @@ class ConfigDirectories(object):
 
     def _create_directory(self, dirpath):
         fool.files.create_subdirs(dirpath)
-        print('creating directory {}'.format(dirpath))
         dirpath.mkdir(self.directory_mode)
 
     def create_config_dir(self):
@@ -75,6 +74,14 @@ class ConfigDirectories(object):
         self._create_directory(self.data_dir)
 
 
+class FoolConfigParser(configparser.SafeConfigParser):
+
+    def __init__(self, allow_no_value=True):
+        configparser.SafeConfigParser.__init__(self,
+                                               allow_no_value=allow_no_value)
+        self.optionxform = str
+
+
 class ConfigFile(object):
     """A configuration file object.
 
@@ -90,11 +97,11 @@ class ConfigFile(object):
                           / fool.files.FoolPath(path))
         else:
             self._path = fool.files.FoolPath(path)
-        self.configparser = configparser.SafeConfigParser()
+        self.configparser = FoolConfigParser()
 
     def _clear_config_parser(self):
         """Clear and return the new config parser for this configfile."""
-        self.configparser = configparser.SafeConfigParser()
+        self.configparser = FoolConfigParser()
         return self.configparser
 
     def prepare_write(self):

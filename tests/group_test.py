@@ -5,12 +5,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import unittest
-import os
 
-from six.moves import configparser
 from six.moves import map
 
 import fool.group
+import fool.conf
 import tests.util
 
 class UnitTest(unittest.TestCase):
@@ -43,7 +42,7 @@ class UnitTest(unittest.TestCase):
             grp = fool.group.Group('Group', group_source)
             group_config = fool.group.GroupListConfig([grp])
             group_config.write()
-            config_parser = configparser.SafeConfigParser()
+            config_parser = fool.conf.FoolConfigParser()
             config_parser.read(str(group_config.path))
             group_config.clear_state()
             group_config = fool.group.GroupListConfig()
@@ -114,7 +113,27 @@ class UnitTest(unittest.TestCase):
             (group_source / 'a').mknod()
             grp = fool.group.Group('main', group_source)
             grp.write()
-            config_parser = configparser.SafeConfigParser()
+            config_parser = fool.conf.FoolConfigParser()
             config_parser.read(str(grp.path))
             other = fool.group.Group.from_config_file(config_parser)
             self.assertEqual(other, grp)
+
+    def test_serialize_multiple_group_configs(self):
+        with tests.util.temporary_config() as xdg_config:
+            group_a_source = xdg_config.home / 'a'
+            group_a_source.mkdir()
+            (group_a_source / 'a').mknod()
+            grp_a = fool.group.Group('A', group_a_source)
+            group_b_source = xdg_config.home / 'b'
+            group_b_source.mkdir()
+            (group_b_source / 'b').mknod()
+            grp_b = fool.group.Group('B', group_b_source)
+            group_config = fool.group.GroupListConfig([grp_a, grp_b])
+            group_config.write()
+            config_parser = fool.conf.FoolConfigParser()
+            config_parser.read(str(group_config.path))
+            group_config = group_config.from_config_file(config_parser)
+            self.assertEqual(group_config['A'].source, group_a_source)
+            self.assertEqual(group_config['A'].destination, xdg_config.home)
+            self.assertEqual(group_config['B'].source, group_b_source)
+            self.assertEqual(group_config['B'].destination, xdg_config.home)

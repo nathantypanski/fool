@@ -5,7 +5,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
-import re
 
 import six
 
@@ -57,17 +56,11 @@ class GroupListConfig(fool.conf.ConfigFile,
         Returns:
             New GroupListConfig object with settings from config file.
         """
-        groupmatch = re.compile(r'group\.(.*)')
         groups = []
-        for section in config.sections():
-            try:
-                match = groupmatch.match(section)
-                name = match.group(1)
-                source = config.get(section, 'source')
-                destination = config.get(section, 'destination')
-                groups.append(Group(name, source, destination))
-            except TypeError:
-                pass # not a group
+        for grouprc_path, _ in config.items('groups'):
+            grouprc_config = fool.conf.FoolConfigParser()
+            grouprc_config.read(str(grouprc_path))
+            groups.append(Group.from_config_file(grouprc_config))
         cls.clear_state()
         return GroupListConfig(groups)
 
@@ -126,11 +119,11 @@ class GroupListConfig(fool.conf.ConfigFile,
 
     def prepare_write(self):
         config = self._clear_config_parser()
+        groups_section = six.text_type('groups')
+        config.add_section(groups_section)
         for name, group in self.items():
-            section = six.text_type('group.{}'.format(name))
-            config.add_section(section)
-            config.set(section, 'source', six.text_type(group.source))
-            config.set(section, 'destination', six.text_type(group.destination))
+            group.write()
+            config.set(groups_section, six.text_type(group.path))
 
 
 class Group(fool.conf.ConfigFile):

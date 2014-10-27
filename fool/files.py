@@ -78,27 +78,27 @@ class Path(object):
 
     @property
     def isabs(self):
-        """True when this path is absolute, False otherwise."""
+        """Test whether this path is absolute."""
         return os.path.isabs(self.pathname)
 
     @property
     def isfile(self):
-        """True when this path is a file, False otherwise."""
+        """Test whether this path is a file."""
         return os.path.isfile(self.pathname)
 
     @property
     def isdir(self):
-        """True when this path is a directory, False otherwise."""
+        """Test whether this path is a directory."""
         return os.path.isdir(self.pathname)
 
     @property
     def islink(self):
-        """True when this path is a symbolic link, False otherwise."""
+        """Test whether this path is a symbolic link."""
         return os.path.islink(self.pathname)
 
     @property
     def ismount(self):
-        """True when this path is a mount point, False otherwise."""
+        """Test whether this path is a mount point."""
         return os.path.ismount(self.pathname)
 
     def join(self, *paths):

@@ -16,7 +16,7 @@ import tests.util
 class UnitTest(unittest.TestCase):
 
     def test_group_with_name_and_path(self):
-        with util.temporary_config() as xdg_config:
+        with tests.util.temporary_config() as xdg_config:
             group_config = fool.group.GroupConfig()
             group_source = xdg_config.home / 'test'
             grp = fool.group.Group('Group', group_source)
@@ -27,7 +27,7 @@ class UnitTest(unittest.TestCase):
             self.assertTrue(grp.name in group_config)
 
     def test_create_group_from_iterable(self):
-        with util.temporary_config() as xdg_config:
+        with tests.util.temporary_config() as xdg_config:
             grp_a_src = xdg_config.home / 'a'
             grp_a = fool.group.Group('grpa', grp_a_src)
             grp_b_src = os.path.join(xdg_config.home, 'b')
@@ -38,7 +38,7 @@ class UnitTest(unittest.TestCase):
             self.assertEqual(group_config['grpb'], grp_b)
 
     def test_write_one_group_to_file(self):
-        with util.temporary_config() as xdg_config:
+        with tests.util.temporary_config() as xdg_config:
             group_source = xdg_config.home / 'test'
             grp = fool.group.Group('Group', group_source)
             group_config = fool.group.GroupConfig([grp])
@@ -53,7 +53,7 @@ class UnitTest(unittest.TestCase):
             self.assertEqual(group_config['Group'].destination, xdg_config.home)
 
     def test_walk_group_files(self):
-        with util.temporary_config() as xdg_config:
+        with tests.util.temporary_config() as xdg_config:
             group_source = xdg_config.home / 'test'
             group_source.mkdir()
             (group_source / 'a').mknod()
@@ -64,7 +64,7 @@ class UnitTest(unittest.TestCase):
                                          group_source / 'a'])
 
     def test_group_object_lists(self):
-        with util.temporary_config() as xdg_config:
+        with tests.util.temporary_config() as xdg_config:
             group_source = xdg_config.home / 'test'
             group_source.mkdir()
             (group_source / 'a').mknod()

@@ -8,4 +8,5 @@ setuptools.setup(
     scripts = ['fool.py'],
     packages = setuptools.find_packages(),
     install_requires = ['six'],
+    build_requires = ['sphinxcontrib-napoleon'],
 )

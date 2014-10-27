@@ -11,7 +11,6 @@ import unittest
 import tests.conf_test
 import tests.conflicts_test
 import tests.files_test
-import tests.git_test
 import tests.group_test
 import tests.xdg_test
 
@@ -24,7 +23,6 @@ class AllTests(unittest.TestSuite):
             loader.loadTestsFromModule(tests.conf_test),
             loader.loadTestsFromModule(tests.conflicts_test),
             loader.loadTestsFromModule(tests.files_test),
-            loader.loadTestsFromModule(tests.git_test),
             loader.loadTestsFromModule(tests.group_test),
             loader.loadTestsFromModule(tests.xdg_test),
         ])

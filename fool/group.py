@@ -1,4 +1,6 @@
 """fool file groups."""
+
+from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -180,7 +182,7 @@ class GroupObject(object):
         return "GroupObject({}, {})".format(self.source, self.destination)
 
 
-class Group(object):
+class Group(fool.conf.ConfigFile):
     """Fool file group.
 
     Args:
@@ -192,11 +194,38 @@ class Group(object):
     """
     def __init__(self, name, source, destination=None):
         xdg_config = fool.xdg.XDGConfig()
-        self.name = name
-        self.source = fool.files.FoolPath(source)
-        if destination is None:
-            destination = xdg_config.home
-        self.destination = destination
+        self._name = name
+        self._source = fool.files.FoolPath(source)
+        if destination:
+            self._destination = fool.files.FoolPath(destination)
+        else:
+            self._destination = xdg_config.home
+        config_file_path = fool.files.FoolPath(source) / '.foolrc'
+        super(Group, self).__init__(config_file_path)
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = fool.files.FoolPath(value)
+
+    @property
+    def source(self):
+        return self._source
+
+    @source.setter
+    def source(self, value):
+        self._source = fool.files.FoolPath(value)
+
+    @property
+    def destination(self):
+        return self._destination
+
+    @destination.setter
+    def destination(self, value):
+        self._destination = fool.files.FoolPath(value)
 
     def files(self, topdown=True, onerror=None, followlinks=False):
         """Walk the source files in this group.
@@ -231,6 +260,37 @@ class Group(object):
         """
         for group_object in self.group_objects():
             group_object.sync(resolver=resolver)
+
+    @classmethod
+    def from_config_file(cls, config):
+        """Rebuild the GroupListConfig from a supplied ConfigParser.
+
+        If successful, the state of the group config will be reset.
+
+        Args:
+            config: ConfigParser orbject containing group definitions.
+
+        Returns:
+            New GroupListConfig object with settings from config file.
+        """
+        name = config.get('group', 'name')
+        source = config.get('group', 'source')
+        destination = config.get('group', 'destination')
+        return Group(name, source, destination)
+
+    def prepare_write(self):
+        config = self._clear_config_parser()
+        group_section = six.text_type('group')
+        config.add_section(group_section)
+        config.set(group_section, 'destination', six.text_type(self.destination))
+        config.set(group_section, 'source', six.text_type(self.source))
+        config.set(group_section, 'name', six.text_type(self.name))
+
+    def __eq__(self, other):
+        names_match = self.name == other.name
+        sources_match = self.source == other.source
+        destinations_match = self.destination == other.destination
+        return names_match and sources_match and destinations_match
 
     def __repr__(self):
         return ('Group(name={}, source={}, destination={})'

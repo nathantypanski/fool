@@ -30,8 +30,8 @@ class UnitTest(unittest.TestCase):
         with tests.util.temporary_config() as xdg_config:
             grp_a_src = xdg_config.home / 'a'
             grp_a = fool.group.Group('grpa', grp_a_src)
-            grp_b_src = os.path.join(xdg_config.home, 'b')
-            grp_b = fool.group.Group('grpb', grp_a_src)
+            grp_b_src = xdg_config.home / 'b'
+            grp_b = fool.group.Group('grpb', grp_b_src)
             group_config = fool.group.GroupListConfig([grp_a, grp_b])
             self.assertEqual(len(group_config), 2)
             self.assertEqual(group_config['grpa'], grp_a)
@@ -106,3 +106,15 @@ class UnitTest(unittest.TestCase):
             (xdg_config.home / 'a').mknod()
             with self.assertRaises(OSError):
                 grp.sync()
+
+    def test_serialize_group_config(self):
+        with tests.util.temporary_config() as xdg_config:
+            group_source = xdg_config.home / 'test'
+            group_source.mkdir()
+            (group_source / 'a').mknod()
+            grp = fool.group.Group('main', group_source)
+            grp.write()
+            config_parser = configparser.SafeConfigParser()
+            config_parser.read(str(grp.path))
+            other = fool.group.Group.from_config_file(config_parser)
+            self.assertEqual(other, grp)

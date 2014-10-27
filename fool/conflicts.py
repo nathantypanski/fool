@@ -19,6 +19,14 @@ def __ConflictResolver_resolve(self):
     """Resolve this directory"""
     pass
 
+# We need to declare ConflictResolver like this in order to achieve full
+# compatibility between Python versions.
+#
+# Here, we're calling the metaclass with the name of the new type and
+# supplying the dictionary of arguments required to construct the
+# ConflictResolver type. See
+# <https://wiki.python.org/moin/PortingToPy3k/BilingualQuickRef#metaclasses>
+# for more information on building metaclasses this way.
 ConflictResolver = abc.ABCMeta(str('ConflictResolver'), (),
     {
         '__init__': __ConflictResolver___init__,

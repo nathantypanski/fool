@@ -6,13 +6,13 @@ from __future__ import unicode_literals
 
 import collections
 import re
-import sys
 
 import six
 
 import fool.conf
 import fool.xdg
 import fool.files
+import fool.objects
 
 
 class GroupListConfig(fool.conf.ConfigFile,
@@ -133,55 +133,6 @@ class GroupListConfig(fool.conf.ConfigFile,
             config.set(section, 'destination', six.text_type(group.destination))
 
 
-class GroupObject(object):
-    """An object for syncing with fool.
-
-    A GroupObject is pathname and a destination link pathname, representing
-    the source pathname and the destination pathname of a desired link.
-
-    Args:
-        source: source pathname for this GroupObject.
-        destination: destination pathname for this GroupObject.
-    """
-
-    def __init__(self, source, destination):
-        self.source = fool.files.FoolPath(source)
-        self.destination = fool.files.FoolPath(destination)
-
-    @property
-    def synced(self):
-        """Test whether the destination is a symlink to the source."""
-        return (self.destination.islink()
-                and self.source == self.destination.realpath())
-
-    def sync(self, resolver=None):
-        """Create a symbolic link from the source to destination.
-
-        Do nothing if already synced.
-
-        Keyword args:
-            resolver: Resolver class used to handle flile conflicts.
-        """
-        if self.synced:
-            return
-        if resolver is not None and not hasattr(resolver, 'resolve'):
-            raise TypeError('resolver must have a resolve() method')
-        try:
-            self.source.symlink(self.destination)
-        except OSError as exception:
-            if resolver is not None:
-                resolver(self.source, self.destination, exception).resolve()
-            else:
-                six.reraise(*sys.exc_info())
-
-    def tuple(self):
-        """Return a tuple of source, destination."""
-        return self.source, self.destination
-
-    def __repr__(self):
-        return "GroupObject({}, {})".format(self.source, self.destination)
-
-
 class Group(fool.conf.ConfigFile):
     """Fool file group.
 
@@ -249,7 +200,7 @@ class Group(fool.conf.ConfigFile):
         """
         for path in self.source.walk_files():
             relpath = path.relpath(self.source)
-            gobj = GroupObject(path, self.destination / relpath)
+            gobj = fool.objects.GroupObject(path, self.destination / relpath)
             yield gobj
 
     def sync(self, resolver=None):

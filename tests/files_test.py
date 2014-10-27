@@ -17,8 +17,8 @@ class UnitTest(unittest.TestCase):
             (tempdir / 'c').mknod()
             (tempdir / 'a' / 'd').mknod()
             (tempdir / 'a' / 'e').mknod()
-            self.assertEqual(list(tempdir.walk_files()),
-                             [tempdir / 'c',
-                              tempdir / 'b',
-                              tempdir / 'a' / 'e',
-                              tempdir / 'a' / 'd'])
+            self.assertEqual(set(tempdir.walk_files()),
+                             set({tempdir / 'c',
+                                  tempdir / 'b',
+                                  tempdir / 'a' / 'e',
+                                  tempdir / 'a' / 'd'}))

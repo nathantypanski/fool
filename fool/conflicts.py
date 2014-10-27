@@ -10,14 +10,24 @@ import abc
 
 import fool.files
 
-def __ConflictResolver___init__(self, source, destination):
+
+__all__ = [
+    'ConflictResolver',
+    'OverwriteResolver',
+]
+
+
+def __ConflictResolver___init__(self, source, destination, exception=None):
     self.source = fool.files.FoolPath(source)
     self.destination = fool.files.FoolPath(destination)
+    self.exception = exception
+
 
 @abc.abstractmethod
 def __ConflictResolver_resolve(self):
     """Resolve this directory"""
     pass
+
 
 # We need to declare ConflictResolver like this in order to achieve full
 # compatibility between Python versions.
@@ -44,8 +54,8 @@ class OverwriteResolver(ConflictResolver):
     """A ConflictResolver that always overwrites the destination.
     """
 
-    def __init__(self, source, destination):
-        super(OverwriteResolver, self).__init__(source, destination)
+    def __init__(self, source, destination, exception=None):
+        super(OverwriteResolver, self).__init__(source, destination, exception)
 
     def resolve(self):
         with fool.files.temporary_directory() as tempdir:

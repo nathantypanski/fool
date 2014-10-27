@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import collections
 import re
+import sys
 
 import six
 
@@ -139,14 +140,25 @@ class GroupObject(object):
         return (self.destination.islink()
                 and self.source == self.destination.realpath())
 
-    def sync(self):
+    def sync(self, resolver=None):
         """Create a symbolic link from the source to destination.
 
         Do nothing if already synced.
+
+        Keyword args:
+            resolver: Resolver class used to handle flile conflicts.
         """
         if self.synced:
             return
-        self.source.symlink(self.destination)
+        if resolver is not None and not hasattr(resolver, 'resolve'):
+            raise TypeError('resolver must have a resolve() method')
+        try:
+            self.source.symlink(self.destination)
+        except OSError as exception:
+            if resolver:
+                resolver(self.source, self.destination, exception).resolve()
+            else:
+                six.reraise(*sys.exc_info())
 
     def tuple(self):
         """Return a tuple of source, destination."""
@@ -189,9 +201,14 @@ class Group(object):
             gobj = GroupObject(path, self.destination / relpath)
             yield gobj
 
-    def sync(self):
+    def sync(self, resolver=None):
+        """Sync the files in this group.
+
+        Keyword args:
+            resolver: Resolver class used to handle flile conflicts.
+        """
         for group_object in self.group_objects():
-            group_object.sync()
+            group_object.sync(resolver)
 
     def __repr__(self):
         return ('Group(name={}, source={}, destination={})'

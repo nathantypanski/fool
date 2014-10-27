@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 """A test suite that runs all tests for pyfakefs at once."""
 

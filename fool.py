@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 """fool - a dotfile sync toolkit"""
 from __future__ import print_function

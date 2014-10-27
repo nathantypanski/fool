@@ -2,6 +2,8 @@
 
 import os
 
+import fool.files
+
 class XDGConfig(object):
     __shared_state = {}
 
@@ -28,7 +30,7 @@ class XDGConfig(object):
 
     @home.setter
     def home(self, value):
-        self._home = value
+        self._home = fool.files.Path(value)
         self._custom_home = True
 
     @property
@@ -37,7 +39,7 @@ class XDGConfig(object):
 
     @data_home.setter
     def data_home(self, value):
-        self._data_home = value
+        self._data_home = fool.files.Path(value)
 
     @property
     def config_home(self):
@@ -45,7 +47,7 @@ class XDGConfig(object):
 
     @config_home.setter
     def config_home(self, value):
-        self._config_home = value
+        self._config_home = fool.files.Path(value)
 
     def _xdg_env(self, attr, env, default):
         if getattr(self, attr) is not None:
@@ -53,9 +55,9 @@ class XDGConfig(object):
         else:
             if not self._custom_home:
                 try:
-                    setattr(self, attr, self.environ[env])
+                    setattr(self, attr, fool.files.Path(self.environ[env]))
                 except KeyError:
-                    setattr(self, attr, os.path.join(self.home, default))
+                    setattr(self, attr, self.home / default)
             else:
-                setattr(self, attr, os.path.join(self.home, default))
+                setattr(self, attr, self.home / default)
             return getattr(self, attr)

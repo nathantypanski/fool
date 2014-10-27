@@ -11,6 +11,7 @@ except ImportError:
     import configparser
 
 import fool.xdg
+import fool.files
 
 
 def create_subdirs(path):
@@ -21,7 +22,7 @@ def create_subdirs(path):
             itself will not be created.
     """
     try:
-        os.makedirs(os.path.dirname(path))
+        os.makedirs(str(fool.files.Path(path).dirname))
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise exception
@@ -53,12 +54,12 @@ class ConfigDirectories(object):
     @property
     def config_dir(self):
         """fool's config directory"""
-        return self.xdg_config.config_home + '/' + self._config_name
+        return self.xdg_config.config_home / self._config_name
 
     @property
     def data_dir(self):
         """fool's data directory"""
-        return self.xdg_config.data_home + '/' + self._config_name
+        return self.xdg_config.data_home / self._config_name
 
     def create_config_dir(self):
         """Create the configuration directory.
@@ -72,7 +73,7 @@ class ConfigDirectories(object):
         """
         create_subdirs(self.config_dir)
         print('creating directory {}'.format(self.config_dir))
-        os.mkdir(self.config_dir, self.directory_mode)
+        os.mkdir(str(self.config_dir), self.directory_mode)
 
     def create_data_dir(self):
         """Create the data directory.
@@ -86,7 +87,7 @@ class ConfigDirectories(object):
         """
         create_subdirs(self.data_dir)
         print('creating directory {}'.format(self.data_dir))
-        os.mkdir(self.data_dir, self.directory_mode)
+        os.mkdir(str(self.data_dir), self.directory_mode)
 
 
 class ConfigFile(object):
@@ -101,9 +102,9 @@ class ConfigFile(object):
 
     def __init__(self, path, directory=None):
         if directory:
-            self._path = os.path.join(directory, path)
+            self._path = fool.files.Path(directory) / fool.files.Path(path)
         else:
-            self._path = path
+            self._path = fool.files.Path(path)
         self.configparser = configparser.SafeConfigParser()
 
     def _clear_config_parser(self):
@@ -121,12 +122,12 @@ class ConfigFile(object):
     @property
     def exists(self):
         """True if the configuration file exists"""
-        return os.path.exists(self._path)
+        return self._path.exists
 
     def write(self):
         """Create an empty configuration file if it does not exist.
         """
         self.prepare_write()
         create_subdirs(self._path)
-        with open(self.path, 'wb') as configfile:
+        with self.path.open('wb') as configfile:
             self.configparser.write(configfile)

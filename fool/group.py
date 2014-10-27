@@ -5,6 +5,7 @@ import re
 
 import fool.conf
 import fool.xdg
+import fool.files
 
 
 class GroupConfig(fool.conf.ConfigFile,
@@ -55,6 +56,7 @@ class GroupConfig(fool.conf.ConfigFile,
                 groups.append(Group(name, source, destination))
             except TypeError:
                 pass # not a group
+        print(config.sections())
         cls.clear_state()
         return GroupConfig(groups)
 
@@ -109,8 +111,8 @@ class GroupConfig(fool.conf.ConfigFile,
         for name, group in self.items():
             section = 'group.{}'.format(name)
             config.add_section(section)
-            config.set(section, 'source', group.source)
-            config.set(section, 'destination', group.destination)
+            config.set(section, 'source', str(group.source))
+            config.set(section, 'destination', str(group.destination))
 
 
 class Group(object):
@@ -126,7 +128,14 @@ class Group(object):
     def __init__(self, name, source, destination=None):
         xdg_config = fool.xdg.XDGConfig()
         self.name = name
-        self.source = source
+        self.source = fool.files.Path(source)
         if destination is None:
             destination = xdg_config.home
         self.destination = destination
+
+    def files(self):
+        return self.source.walk()
+
+    def __repr__(self):
+        return ('Group(name={}, source={}, destination={})'
+                .format(self.name, self.source, self.destination))

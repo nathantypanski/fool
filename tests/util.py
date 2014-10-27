@@ -8,12 +8,13 @@ import os
 import fool.xdg
 import fool.conf
 import fool.group
+import fool.files
 
 @contextlib.contextmanager
 def temporary_directory(*args, **kwargs):
     d = tempfile.mkdtemp(*args, **kwargs)
     try:
-        yield d
+        yield fool.files.Path(d)
     finally:
         shutil.rmtree(d)
 

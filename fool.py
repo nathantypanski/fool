@@ -36,19 +36,19 @@ def build_args():
     group_subparser = group_parser.add_subparsers(title='group actions',
                                                   dest='action_command')
     group_init = group_subparser.add_parser('init', help='create a new group',
-                        parents=[parent_parser])
+                                            parents=[parent_parser])
     group_init.add_argument('name', help='name of group')
     group_init.add_argument('-s', '--source', help='source folder for group')
     group_init.add_argument('-d', '--dest', help='destination folder for group',
                             default=xdg_config.home)
     group_init.set_defaults(func=fool_group_init)
     config_parser = service_subparsers.add_parser('config', help='fool config',
-                                                parents=[parent_parser])
+                                                  parents=[parent_parser])
     config_parser.set_defaults(func=show_help(config_parser))
     config_subparser = config_parser.add_subparsers(title='conf actions',
-                                                dest='action_command')
+                                                    dest='action_command')
     config_check = config_subparser.add_parser('check',
-                                           help='show the configuration')
+                                               help='show the configuration')
     config_check.set_defaults(func=fool_config_check)
     return main_parser
 

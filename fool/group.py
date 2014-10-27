@@ -156,7 +156,7 @@ class GroupObject(object):
             self.source.symlink(self.destination)
         except OSError as exception:
             if resolver:
-                resolver(self.source, self.destination, exception).resolve()
+                resolver(self.source, self.destination, exception)
             else:
                 six.reraise(*sys.exc_info())
 
@@ -208,7 +208,7 @@ class Group(object):
             resolver: Resolver class used to handle flile conflicts.
         """
         for group_object in self.group_objects():
-            group_object.sync(resolver)
+            group_object.sync(resolver=resolver)
 
     def __repr__(self):
         return ('Group(name={}, source={}, destination={})'

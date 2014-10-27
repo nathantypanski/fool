@@ -11,66 +11,94 @@ class Path(object):
 
     @property
     def abspath(self):
+        """Absolute path."""
         return Path(os.path.abspath(self.pathname))
 
     @property
     def basename(self):
+        """The final component of this pathname."""
         return Path(os.path.basename(self.pathname))
 
     @property
     def dirname(self):
+        """The directory component of this pathname."""
         return Path(os.path.dirname(self.pathname))
 
     @property
     def exists(self):
+        """Test whether this path exists.
+
+        This property is False for broken symbolic links.
+        """
         return os.path.exists(self.pathname)
 
     @property
     def lexists(self):
+        """Test whether this path exists.
+
+        This property is True for broken symbolic links.
+        """
         return os.path.lexists(self.pathname)
 
     @property
     def expanduser(self):
+        """Expand ~ and ~user constructions.
+
+        If user or $HOME is unknown, do nothing.
+        """
         return Path(os.path.expanduser(self.pathname))
 
     @property
     def expandvars(self):
+        """Expand shell variables of form $var and ${var}.
+
+        Unknown variables are left unchanged.
+        """
         return Path(os.path.expandvars(self.pathname))
 
     @property
     def atime(self):
+        """The last access time of this file, reported by os.stat()."""
         return os.path.getatime(self.pathname)
 
     @property
     def mtime(self):
+        """The last modification time of this file, reported by os.stat()."""
         return os.path.getmtime(self.pathname)
 
     @property
     def ctime(self):
+        """The metadata change time of this file, reported by os.stat()."""
         return os.path.getctime(self.pathname)
 
     @property
     def size(self):
+        """The size of this file, reported by os.stat()."""
         return os.path.getsize(self.pathname)
 
     @property
     def isabs(self):
+        """True when this path is absolute, False otherwise."""
         return os.path.isabs(self.pathname)
 
     @property
     def isfile(self):
+        """True when this path is a file, False otherwise."""
         return os.path.isfile(self.pathname)
 
     @property
     def isdir(self):
+        """True when this path is a directory, False otherwise."""
         return os.path.isdir(self.pathname)
 
     @property
     def islink(self):
+        """True when this path is a symbolic link, False otherwise."""
         return os.path.islink(self.pathname)
 
     @property
     def ismount(self):
+        """True when this path is a mount point, False otherwise."""
         return os.path.ismount(self.pathname)
 
     def join(self, *paths):
@@ -78,16 +106,20 @@ class Path(object):
 
     @property
     def normpath(self):
+        """Normalize a path, eliminating double slashes, etc."""
         return Path(os.path.normpath(self.pathname))
 
     @property
     def realpath(self):
+        """Follow symlinks to the canonical location of this path."""
         return Path(os.path.realpath(self.pathname))
 
     def open(self, *args, **kwargs):
+        """Open this path, passing all arguments to open()."""
         return open(self.pathname, *args, **kwargs)
 
     def samefile(self, other):
+        """Test whether this path and other reference the same actual file."""
         return os.path.samefile(self.pathname, other)
 
     def split(self):

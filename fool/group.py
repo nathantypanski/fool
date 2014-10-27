@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import collections
 
 import six
+from six.moves import configparser
 
 import fool.conf
 import fool.xdg
@@ -45,22 +46,30 @@ class GroupListConfig(fool.conf.ConfigFile,
         cls.__shared_state.clear()
 
     @classmethod
-    def from_config_file(cls, config):
+    def from_config_file(cls, config=None):
         """Rebuild the GroupListConfig from a supplied ConfigParser.
 
         If successful, the state of the group config will be reset.
 
-        Args:
+        Keyword args:
             config: ConfigParser orbject containing group definitions.
 
         Returns:
             New GroupListConfig object with settings from config file.
         """
-        groups = []
-        for grouprc_path, _ in config.items('groups'):
-            grouprc_config = fool.conf.FoolConfigParser()
-            grouprc_config.read(str(grouprc_path))
-            groups.append(Group.from_config_file(grouprc_config))
+        try:
+            if config is None:
+                config = fool.conf.FoolConfigParser()
+                group_list_path = fool.conf.ConfigDirectories().group_list_path
+                group_list_path = six.text_type(group_list_path)
+                config.read(group_list_path)
+            groups = []
+            for grouprc_path, _ in config.items('groups'):
+                grouprc_config = fool.conf.FoolConfigParser()
+                grouprc_config.read(str(grouprc_path))
+                groups.append(Group.from_config_file(grouprc_config))
+        except configparser.NoSectionError:
+            pass
         cls.clear_state()
         return GroupListConfig(groups)
 
@@ -123,7 +132,8 @@ class GroupListConfig(fool.conf.ConfigFile,
         config.add_section(groups_section)
         for name, group in self.items():
             group.write()
-            config.set(groups_section, six.text_type(group.path))
+            path = six.text_type(group.path.expanduser().abspath())
+            config.set(groups_section, path)
 
 
 class Group(fool.conf.ConfigFile):
@@ -139,11 +149,11 @@ class Group(fool.conf.ConfigFile):
     def __init__(self, name, source, destination=None):
         xdg_config = fool.xdg.XDGConfig()
         self._name = name
-        self._source = fool.files.FoolPath(source)
+        self._source = fool.files.FoolPath(source).expanduser().abspath()
         if destination:
-            self._destination = fool.files.FoolPath(destination)
+            self._destination = fool.files.FoolPath(destination).expanduser().abspath()
         else:
-            self._destination = xdg_config.home
+            self._destination = xdg_config.home.expanduser().abspath()
         config_file_path = fool.files.FoolPath(source) / '.foolrc'
         super(Group, self).__init__(config_file_path)
 

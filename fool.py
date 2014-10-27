@@ -6,6 +6,7 @@ from __future__ import print_function
 import argparse
 
 import fool.conf
+import fool.group
 import fool.xdg
 
 def fool_config_check(args):
@@ -14,14 +15,26 @@ def fool_config_check(args):
                                                 dirs.data_dir))
 
 def fool_group_init(args):
+    group_list = fool.group.GroupListConfig.from_config_file()
     print('Creating new group {}'.format(args.name))
-    print('source: {}'.format(args.source))
-    print('dest: {}'.format(args.dest))
+    grp = fool.group.Group(args.name, args.source, args.dest)
+    print(grp)
+    group_list.add(grp)
+    group_list.write()
 
-def show_help(parser):
-    def helper(*args, **kwargs):
-        parser.print_help()
-    return helper
+
+def fool_group_rm(args):
+    group_list = fool.group.GroupListConfig.from_config_file()
+    print('Removing group {}'.format(args.name))
+    group_list.discard(args.name)
+    group_list.write()
+    print('success')
+
+
+def fool_group_list(args):
+    group_list = fool.group.GroupListConfig.from_config_file()
+    print(group_list.groups)
+
 
 def build_args():
     xdg_config = fool.xdg.XDGConfig()
@@ -32,9 +45,11 @@ def build_args():
     group_parser = service_subparsers.add_parser('group',
                                                  help='fool groups',
                                                  parents=[parent_parser])
-    group_parser.set_defaults(func=show_help(group_parser))
     group_subparser = group_parser.add_subparsers(title='group actions',
                                                   dest='action_command')
+    group_list = group_subparser.add_parser('list', help='show known groups',
+                                            parents=[parent_parser])
+    group_list.set_defaults(func=fool_group_list)
     group_init = group_subparser.add_parser('init', help='create a new group',
                                             parents=[parent_parser])
     group_init.add_argument('name', help='name of group')
@@ -42,9 +57,12 @@ def build_args():
     group_init.add_argument('-d', '--dest', help='destination folder for group',
                             default=xdg_config.home)
     group_init.set_defaults(func=fool_group_init)
+    group_init = group_subparser.add_parser('rm', help='remove a group',
+                                            parents=[parent_parser])
+    group_init.add_argument('name', help='name of group')
+    group_init.set_defaults(func=fool_group_rm)
     config_parser = service_subparsers.add_parser('config', help='fool config',
                                                   parents=[parent_parser])
-    config_parser.set_defaults(func=show_help(config_parser))
     config_subparser = config_parser.add_subparsers(title='conf actions',
                                                     dest='action_command')
     config_check = config_subparser.add_parser('check',

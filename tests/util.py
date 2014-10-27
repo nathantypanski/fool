@@ -19,7 +19,7 @@ def temporary_config(*args, **kwargs):
     """ Create a temporary XDG configuration """
     borg_objects = [fool.xdg.XDGConfig,
                     fool.conf.ConfigDirectories,
-                    fool.group.GroupConfig]
+                    fool.group.GroupListConfig]
     try:
         for obj in borg_objects:
             obj.clear_state()

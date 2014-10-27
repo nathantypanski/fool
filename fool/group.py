@@ -13,10 +13,15 @@ import fool.xdg
 import fool.files
 
 
-class GroupConfig(fool.conf.ConfigFile,
-                  collections.MutableMapping,
-                  collections.MutableSet):
+class GroupListConfig(fool.conf.ConfigFile,
+                      collections.MutableMapping,
+                      collections.MutableSet):
     """Dotfile group configuration file.
+
+    Keyword args:
+        groups: A list of groups to initialize the group configuration.
+            Only valid for the first instantiation of this object, or after
+            the state has been cleared.
     """
     __shared_state = {}
 
@@ -30,8 +35,8 @@ class GroupConfig(fool.conf.ConfigFile,
                 self.groups = {key: val for key, val in groups.items()}
             else:
                 self.groups = {group.name: group for group in groups}
-        super(GroupConfig, self).__init__('groups',
-                                          self.config_directories.config_dir)
+        super(GroupListConfig, self).__init__('groups',
+            self.config_directories.config_dir)
 
     @classmethod
     def clear_state(cls):
@@ -40,7 +45,7 @@ class GroupConfig(fool.conf.ConfigFile,
 
     @classmethod
     def from_config_file(cls, config):
-        """Rebuild the GroupConfig from a supplied ConfigParser.
+        """Rebuild the GroupListConfig from a supplied ConfigParser.
 
         If successful, the state of the group config will be reset.
 
@@ -48,7 +53,7 @@ class GroupConfig(fool.conf.ConfigFile,
             config: ConfigParser orbject containing group definitions.
 
         Returns:
-            New GroupConfig object with settings from config file.
+            New GroupListConfig object with settings from config file.
         """
         groupmatch = re.compile(r'group\.(.*)')
         groups = []
@@ -62,7 +67,7 @@ class GroupConfig(fool.conf.ConfigFile,
             except TypeError:
                 pass # not a group
         cls.clear_state()
-        return GroupConfig(groups)
+        return GroupListConfig(groups)
 
     def __getitem__(self, group):
         """Return the group associated with a given name."""
@@ -72,11 +77,18 @@ class GroupConfig(fool.conf.ConfigFile,
             return self.groups[group]
 
     def __setitem__(self, name, group):
-        """Return the group associated with a given name."""
+        """Set the group associated with a given name.
+
+        Args:
+            name: the name for this group.
+            group: Group object to associate with this name.
+        """
         if not isinstance(group, fool.group.Group):
             raise TypeError('can only add groups')
         if not isinstance(name, six.string_types):
             raise TypeError('groups can only be keyed by strings')
+        if not name == group.name:
+            raise ValueError('name argument must match group name')
         self.groups[group.name] = group
 
     def __delitem__(self, group):
@@ -95,18 +107,18 @@ class GroupConfig(fool.conf.ConfigFile,
         return len(self.groups)
 
     def add(self, group):
-        """Add a group to the GroupConfig.
+        """Add a group to the GroupListConfig.
 
         Args:
-           group: a Group object to be added.
+           group: Group object to be added.
         """
         self[group.name] = group
 
     def discard(self, group):
-        """Remove a group from the GroupConfig.
+        """Remove a group from the GroupListConfig.
 
         Args:
-           group: a Group object to be deleted.
+           group: Group object to be deleted.
         """
         del self[group]
 
@@ -155,8 +167,8 @@ class GroupObject(object):
         try:
             self.source.symlink(self.destination)
         except OSError as exception:
-            if resolver:
-                resolver(self.source, self.destination, exception)
+            if resolver is not None:
+                resolver(self.source, self.destination, exception).resolve()
             else:
                 six.reraise(*sys.exc_info())
 
@@ -187,6 +199,16 @@ class Group(object):
         self.destination = destination
 
     def files(self, topdown=True, onerror=None, followlinks=False):
+        """Walk the source files in this group.
+
+        Keyword args:
+            topdown: see os.walk()
+            onerror: see os.walk()
+            followlinks: see os.walk()
+
+        Yields:
+            Source files in this group, per os.walk().
+        """
         return self.source.walk_files()
 
     def group_objects(self):

@@ -93,7 +93,7 @@ class ConfigFile(object):
         self.configparser = configparser.SafeConfigParser()
 
     def _clear_config_parser(self):
-        """Clear and return the new config parser for this configfile"""
+        """Clear and return the new config parser for this configfile."""
         self.configparser = configparser.SafeConfigParser()
         return self.configparser
 
@@ -105,7 +105,7 @@ class ConfigFile(object):
         return self._path
 
     def exists(self):
-        """True if the configuration file exists"""
+        """True if the configuration file exists."""
         return self._path.exists()
 
     def write(self):

@@ -27,7 +27,10 @@ class AllTests(unittest.TestSuite):
         return self
 
 def main():
-    unittest.TextTestRunner(verbosity=2).run(AllTests().suite())
+    result = unittest.TextTestRunner(verbosity=2).run(AllTests().suite())
+    if not result.wasSuccessful():
+        exit(1)
+
 
 if __name__ == '__main__':
     main()

@@ -23,7 +23,7 @@ def create_subdirs(path):
             itself will not be created.
     """
     try:
-        os.makedirs(six.text_type(fool.files.FoolPath(path).dirname))
+        os.makedirs(six.text_type(fool.files.FoolPath(path).dirname()))
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise exception
@@ -121,10 +121,9 @@ class ConfigFile(object):
     def path(self):
         return self._path
 
-    @property
     def exists(self):
         """True if the configuration file exists"""
-        return self._path.exists
+        return self._path.exists()
 
     def write(self):
         """Create an empty configuration file if it does not exist.

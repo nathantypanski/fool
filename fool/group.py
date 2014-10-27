@@ -136,8 +136,8 @@ class GroupObject(object):
     @property
     def synced(self):
         """Test whether the destination is a symlink to the source."""
-        return (self.destination.islink
-                and self.source == self.destination.realpath)
+        return (self.destination.islink()
+                and self.source == self.destination.realpath())
 
     def sync(self):
         """Create a symbolic link from the source to destination.

@@ -21,38 +21,32 @@ class FoolPath(object):
         """Immutable string representation of this pathname."""
         return self._pathname
 
-    @property
     def abspath(self):
         """Absolute path."""
         return FoolPath(os.path.abspath(self.pathname))
 
-    @property
     def basename(self):
         """The final component of this pathname."""
         return FoolPath(os.path.basename(self.pathname))
 
-    @property
     def dirname(self):
         """The directory component of this pathname."""
         return FoolPath(os.path.dirname(self.pathname))
 
-    @property
     def exists(self):
         """Test whether this path exists.
 
-        This property is False for broken symbolic links.
+        This is False for broken symbolic links.
         """
         return os.path.exists(self.pathname)
 
-    @property
     def lexists(self):
         """Test whether this path exists.
 
-        This property is True for broken symbolic links.
+        This is True for broken symbolic links.
         """
         return os.path.lexists(self.pathname)
 
-    @property
     def expanduser(self):
         """Expand ~ and ~user constructions.
 
@@ -60,7 +54,6 @@ class FoolPath(object):
         """
         return FoolPath(os.path.expanduser(self.pathname))
 
-    @property
     def expandvars(self):
         """Expand shell variables of form $var and ${var}.
 
@@ -68,47 +61,38 @@ class FoolPath(object):
         """
         return FoolPath(os.path.expandvars(self.pathname))
 
-    @property
     def atime(self):
         """The last access time of this file, reported by os.stat()."""
         return os.path.getatime(self.pathname)
 
-    @property
     def mtime(self):
         """The last modification time of this file, reported by os.stat()."""
         return os.path.getmtime(self.pathname)
 
-    @property
     def ctime(self):
         """The metadata change time of this file, reported by os.stat()."""
         return os.path.getctime(self.pathname)
 
-    @property
     def size(self):
         """The size of this file, reported by os.stat()."""
         return os.path.getsize(self.pathname)
 
-    @property
     def isabs(self):
         """Test whether this path is absolute."""
         return os.path.isabs(self.pathname)
 
-    @property
     def isfile(self):
         """Test whether this path is a file."""
         return os.path.isfile(self.pathname)
 
-    @property
     def isdir(self):
         """Test whether this path is a directory."""
         return os.path.isdir(self.pathname)
 
-    @property
     def islink(self):
         """Test whether this path is a symbolic link."""
         return os.path.islink(self.pathname)
 
-    @property
     def ismount(self):
         """Test whether this path is a mount point."""
         return os.path.ismount(self.pathname)
@@ -116,7 +100,6 @@ class FoolPath(object):
     def join(self, *paths):
         return FoolPath(os.path.join(self.pathname, *paths))
 
-    @property
     def normpath(self):
         """Normalize a path, eliminating double slashes, etc."""
         return FoolPath(os.path.normpath(self.pathname))
@@ -131,7 +114,6 @@ class FoolPath(object):
             start = os.curdir
         return FoolPath(os.path.relpath(self.pathname, six.text_type(start)))
 
-    @property
     def realpath(self):
         """Follow symlinks to the canonical location of this path."""
         return FoolPath(os.path.realpath(self.pathname))

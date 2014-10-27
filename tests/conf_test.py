@@ -31,9 +31,9 @@ class UnitTest(unittest.TestCase):
             dirconf = fool.conf.ConfigDirectories()
             self.assertEqual(dirconf.config_dir,
                              tempdir / '.config' / 'fool')
-            self.assertFalse(dirconf.config_dir.exists)
+            self.assertFalse(dirconf.config_dir.exists())
             dirconf.create_config_dir()
-            self.assertTrue(dirconf.config_dir.isdir)
+            self.assertTrue(dirconf.config_dir.isdir())
 
     def test_create_data_dir(self):
         with tests.util.temporary_config() as xdg_config:
@@ -41,9 +41,9 @@ class UnitTest(unittest.TestCase):
             dirconf = fool.conf.ConfigDirectories()
             self.assertEqual(dirconf.data_dir,
                              tempdir / '.local' / 'share' / 'fool')
-            self.assertFalse(dirconf.data_dir.exists)
+            self.assertFalse(dirconf.data_dir.exists())
             dirconf.create_data_dir()
-            self.assertTrue(dirconf.data_dir.exists)
+            self.assertTrue(dirconf.data_dir.exists())
 
     def test_config_files_are_relative_to_paths(self):
         conf_file = fool.conf.ConfigFile('world', '/hello')
@@ -56,17 +56,17 @@ class UnitTest(unittest.TestCase):
     def test_can_create_new_configfile_in_existing_directory(self):
         with tests.util.temporary_directory() as tempdir:
             conf_file = fool.conf.ConfigFile('world', tempdir)
-            self.assertFalse(conf_file.exists)
+            self.assertFalse(conf_file.exists())
             conf_file.write()
-            self.assertTrue(conf_file.exists)
+            self.assertTrue(conf_file.exists())
             self.assertTrue((fool.files.FoolPath(tempdir) / 'world').exists)
             self.assertTrue((fool.files.FoolPath(tempdir) / 'world').isfile)
 
     def test_can_create_new_configfile(self):
         with tests.util.temporary_directory() as tempdir:
             conf_file = fool.conf.ConfigFile('a/b', tempdir)
-            self.assertFalse(conf_file.exists)
+            self.assertFalse(conf_file.exists())
             conf_file.write()
-            self.assertTrue(conf_file.exists)
-            self.assertTrue((tempdir / 'a' / 'b').exists)
-            self.assertTrue((tempdir / 'a' / 'b').isfile)
+            self.assertTrue(conf_file.exists())
+            self.assertTrue((tempdir / 'a' / 'b').exists())
+            self.assertTrue((tempdir / 'a' / 'b').isfile())

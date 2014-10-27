@@ -59,9 +59,9 @@ class UnitTest(unittest.TestCase):
             (group_source / 'a').mknod()
             (group_source / 'b').mknod()
             grp = fool.group.Group('main', group_source)
-            grp_files = list(grp.files())
-            self.assertEqual(grp_files, [group_source / 'b',
-                                         group_source / 'a'])
+            grp_files = set(grp.files())
+            self.assertEqual(grp_files, set({group_source / 'b',
+                                             group_source / 'a'}))
 
     def test_group_object_lists(self):
         with tests.util.temporary_config() as xdg_config:
@@ -70,7 +70,8 @@ class UnitTest(unittest.TestCase):
             (group_source / 'a').mknod()
             (group_source / 'b').mknod()
             grp = fool.group.Group('main', group_source)
-            grp_objects = list(map(lambda e: e.tuple(),
+            grp_objects = set(map(lambda e: e.tuple(),
                                    grp.group_objects()))
-            expected = [(group_source / 'a', xdg_config.home / 'a'),
-                        (group_source / 'b', xdg_config.home / 'b')]
+            expected = set({(group_source / 'a', xdg_config.home / 'a'),
+                            (group_source / 'b', xdg_config.home / 'b')})
+            self.assertEqual(expected, grp_objects)

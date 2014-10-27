@@ -182,6 +182,9 @@ class FoolPath(object):
     def __repr__(self):
         return 'FoolPath("{}")'.format(self.pathname)
 
+    def __hash__(self):
+        return hash(self.pathname)
+
     def __add__(self, other):
         return self / other
 

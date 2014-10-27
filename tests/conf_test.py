@@ -11,7 +11,7 @@ import unittest
 import fool.conf
 import fool.xdg
 
-import util
+import tests.util
 
 class UnitTest(unittest.TestCase):
 

@@ -11,7 +11,7 @@ from six.moves import configparser
 from six.moves import map
 
 import fool.group
-import util
+import tests.util
 
 class UnitTest(unittest.TestCase):
 

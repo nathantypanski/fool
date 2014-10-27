@@ -8,10 +8,10 @@ from __future__ import unicode_literals
 
 import unittest
 
-import xdg_test
-import conf_test
-import group_test
-import files_test
+import tests.xdg_test
+import tests.conf_test
+import tests.group_test
+import tests.files_test
 
 class AllTests(unittest.TestSuite):
     """A test suite that runs all tests at once."""
@@ -19,10 +19,10 @@ class AllTests(unittest.TestSuite):
     def suite(self):
         loader = unittest.defaultTestLoader
         self.addTests([
-            loader.loadTestsFromModule(xdg_test),
-            loader.loadTestsFromModule(conf_test),
-            loader.loadTestsFromModule(group_test),
-            loader.loadTestsFromModule(files_test),
+            loader.loadTestsFromModule(tests.xdg_test),
+            loader.loadTestsFromModule(tests.conf_test),
+            loader.loadTestsFromModule(tests.group_test),
+            loader.loadTestsFromModule(tests.files_test),
         ])
         return self
 

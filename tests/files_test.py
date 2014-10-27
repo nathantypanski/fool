@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import unittest
 
 import fool.files
-import util
+import tests.util
 
 class UnitTest(unittest.TestCase):
 

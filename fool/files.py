@@ -231,6 +231,25 @@ def temporary_directory(*args, **kwargs):
         shutil.rmtree(d)
 
 
+@contextlib.contextmanager
+def temporary_directory_chdir(*args, **kwargs):
+    """Create a temporary directory with the supplied arguments.
+
+    Changes directories into the temporary directory while within the context.
+
+    Yields:
+        A temporary directory that will be removed upon context exit.
+    """
+    old_cwd = os.getcwd()
+    d = tempfile.mkdtemp(*args, **kwargs)
+    try:
+        os.chdir(d)
+        yield FoolPath(d)
+    finally:
+        os.chdir(old_cwd)
+        shutil.rmtree(d)
+
+
 def create_subdirs(path):
     """Create necessary subdirectories leading up to path.
 

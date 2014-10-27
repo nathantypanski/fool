@@ -7,6 +7,7 @@ import contextlib
 import shutil
 import os
 
+import six
 from six.moves import map
 
 import fool.xdg
@@ -20,10 +21,12 @@ def temporary_config(*args, **kwargs):
     borg_objects = [fool.xdg.XDGConfig,
                     fool.conf.ConfigDirectories,
                     fool.group.GroupListConfig]
+    old_cwd = os.getcwd()
     try:
         for obj in borg_objects:
             obj.clear_state()
         with fool.files.temporary_directory() as tempdir:
+            os.chdir(six.text_type(tempdir))
             xdg = fool.xdg.XDGConfig()
             xdg.home = tempdir
             assert not xdg.home.startswith(os.environ['HOME'])
@@ -33,3 +36,4 @@ def temporary_config(*args, **kwargs):
     finally:
         for obj in borg_objects:
             obj.clear_state()
+        os.chdir(old_cwd)

@@ -7,7 +7,12 @@ class Path(object):
     def __init__(self, pathname):
         if isinstance(pathname, Path):
             pathname = pathname.pathname
-        self.pathname = pathname
+        self._pathname = pathname
+
+    @property
+    def pathname(self):
+        """Immutable string representation of this pathname."""
+        return self._pathname
 
     @property
     def abspath(self):
@@ -109,6 +114,16 @@ class Path(object):
         """Normalize a path, eliminating double slashes, etc."""
         return Path(os.path.normpath(self.pathname))
 
+    def relpath(self, start=None):
+        """Return a relative path either from the current directory or start.
+
+        Keyword args:
+            start: Optional start directory. Defaults to os.curdir.
+        """
+        if start is None:
+            start = os.curdir
+        return Path(os.path.relpath(self.pathname, str(start)))
+
     @property
     def realpath(self):
         """Follow symlinks to the canonical location of this path."""
@@ -135,8 +150,30 @@ class Path(object):
         return Path(head), Path(tail)
 
     def walk(self, topdown=True, onerror=None, followlinks=False):
-        return (Path(path) for path in
-                os.walk(self.pathname, topdown, onerror, followlinks))
+        """Same as os.walk on this path."""
+        return os.walk(self.pathname, topdown, onerror, followlinks)
+
+    def walk_files(self, topdown=True, onerror=None, followlinks=False):
+        """Walk the reachable files from this path.
+
+        Yields:
+            Path objects for each file reachable from this path.
+        """
+        for root, dirs, files in os.walk(self.pathname, topdown, onerror, followlinks):
+            for name in files:
+                yield Path(root) / name
+
+    def mkdir(self):
+        """Create a directory at this path."""
+        return os.mkdir(self.pathname)
+
+    def mknod(self, mode=0o0600, device=0):
+        """Create a directory at this path."""
+        return os.mknod(self.pathname, mode, device)
+
+    def symlink(self, link_name):
+        """Create a symbolic link pointing to this path named link_name."""
+        return os.symlink(str(self.pathname), str(link_name))
 
     def startswith(self, value):
         return self.pathname.startswith(value)
@@ -154,7 +191,7 @@ class Path(object):
         return self.pathname
 
     def __repr__(self):
-        return 'Path("{}")'.format(str(self))
+        return 'Path("{}")'.format(self.pathname)
 
     def __add__(self, other):
         return self / other

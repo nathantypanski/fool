@@ -54,4 +54,22 @@ class UnitTest(unittest.TestCase):
     def test_walk_group_files(self):
         with util.temporary_config() as xdg_config:
             group_source = xdg_config.home / 'test'
-            os.mkdir(str(group_source))
+            group_source.mkdir()
+            (group_source / 'a').mknod()
+            (group_source / 'b').mknod()
+            grp = fool.group.Group('main', group_source)
+            grp_files = list(grp.files())
+            self.assertEqual(grp_files, [group_source / 'b',
+                                         group_source / 'a'])
+
+    def test_group_object_lists(self):
+        with util.temporary_config() as xdg_config:
+            group_source = xdg_config.home / 'test'
+            group_source.mkdir()
+            (group_source / 'a').mknod()
+            (group_source / 'b').mknod()
+            grp = fool.group.Group('main', group_source)
+            grp_objects = list(map(lambda e: e.tuple(),
+                                   grp.group_objects()))
+            expected = [(group_source / 'a', xdg_config.home / 'a'),
+                        (group_source / 'b', xdg_config.home / 'b')]

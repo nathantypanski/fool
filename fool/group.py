@@ -114,6 +114,44 @@ class GroupConfig(fool.conf.ConfigFile,
             config.set(section, 'destination', str(group.destination))
 
 
+class GroupObject(object):
+    """An object for syncing with fool.
+
+    A GroupObject is pathname and a destination link pathname, representing
+    the source pathname and the destination pathname of a desired link.
+
+    Args:
+        source: source pathname for this GroupObject.
+        destination: destination pathname for this GroupObject.
+    """
+
+    def __init__(self, source, destination):
+        self.source = fool.files.Path(source)
+        self.destination = fool.files.Path(destination)
+
+    @property
+    def synced(self):
+        """Test whether the destination is a symlink to the source."""
+        return (self.destination.islink
+                and self.source == self.destination.realpath)
+
+    def sync(self):
+        """Create a symbolic link from the source to destination.
+
+        Do nothing if already synced.
+        """
+        if self.synced:
+            return
+        self.source.symlink(self.destination)
+
+    def tuple(self):
+        """Return a tuple of source, destination."""
+        return self.source, self.destination
+
+    def __repr__(self):
+        return "GroupObject({}, {})".format(self.source, self.destination)
+
+
 class Group(object):
     """Fool file group.
 
@@ -132,8 +170,20 @@ class Group(object):
             destination = xdg_config.home
         self.destination = destination
 
-    def files(self):
-        return self.source.walk()
+    def files(self, topdown=True, onerror=None, followlinks=False):
+        return self.source.walk_files()
+
+    def group_objects(self):
+        """Get the GroupObjects associated with this group.
+
+        Yields:
+            GroupObject items for each pair of source and destination paths
+            in this group.
+        """
+        for path in self.source.walk_files():
+            relpath = path.relpath(self.source)
+            gobj = GroupObject(path, self.destination / relpath)
+            yield gobj
 
     def __repr__(self):
         return ('Group(name={}, source={}, destination={})'

@@ -25,18 +25,26 @@ fool.files module
     :undoc-members:
     :show-inheritance:
 
-fool.git module
----------------
-
-.. automodule:: fool.git
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 fool.group module
 -----------------
 
 .. automodule:: fool.group
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+fool.objects module
+-----------------
+
+.. automodule:: fool.objects
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+fool.util module
+---------------
+
+.. automodule:: fool.util
     :members:
     :undoc-members:
     :show-inheritance:

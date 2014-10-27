@@ -1,13 +1,18 @@
 fool package
 ============
 
-Submodules
-----------
-
 fool.conf module
 ----------------
 
 .. automodule:: fool.conf
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+fool.conflicts module
+-----------------
+
+.. automodule:: fool.conflicts
     :members:
     :undoc-members:
     :show-inheritance:

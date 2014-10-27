@@ -79,7 +79,6 @@ class ConfigFile(object):
     """A configuration file object.
 
     Keyword args:
-
         directory: if provided, path is set relative to this directory.
             Otherwise path will be used as given.
 

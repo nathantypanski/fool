@@ -4,6 +4,8 @@
 
 bootstrap your dotfiles like a fool
 
+- [api docs](http://fool.readthedocs.org/en/latest/)
+
 ![the fool tarot card](img/fool.jpg)
 
 ## Features

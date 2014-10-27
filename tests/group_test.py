@@ -75,3 +75,34 @@ class UnitTest(unittest.TestCase):
             expected = set({(group_source / 'a', xdg_config.home / 'a'),
                             (group_source / 'b', xdg_config.home / 'b')})
             self.assertEqual(expected, grp_objects)
+
+    def test_link_simple_group(self):
+        with tests.util.temporary_config() as xdg_config:
+            group_source = xdg_config.home / 'test'
+            group_source.mkdir()
+            (group_source / 'a').mknod()
+            (group_source / 'b').mknod()
+            grp = fool.group.Group('main', group_source)
+            grp_files = set(grp.files())
+            self.assertEqual(grp_files, set({group_source / 'b',
+                                             group_source / 'a'}))
+            grp.sync()
+            self.assertTrue((xdg_config.home / 'a').exists())
+            self.assertTrue((xdg_config.home / 'b').exists())
+            self.assertTrue((xdg_config.home / 'a').islink())
+            self.assertTrue((xdg_config.home / 'b').islink())
+            self.assertEqual((xdg_config.home / 'a').realpath(),
+                             group_source / 'a')
+            self.assertEqual((xdg_config.home / 'b').realpath(),
+                             group_source / 'b')
+
+    def test_link_wont_overwrite(self):
+        with tests.util.temporary_config() as xdg_config:
+            group_source = xdg_config.home / 'test'
+            group_source.mkdir()
+            (group_source / 'a').mknod()
+            grp = fool.group.Group('main', group_source)
+            grp_files = set(grp.files())
+            (xdg_config.home / 'a').mknod()
+            with self.assertRaises(OSError):
+                grp.sync()

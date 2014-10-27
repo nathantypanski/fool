@@ -4,7 +4,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import errno
 import os
 import os.path
 
@@ -13,22 +12,6 @@ from six.moves import configparser
 
 import fool.xdg
 import fool.files
-
-
-def create_subdirs(path):
-    """Create necessary subdirectories leading up to path.
-
-    Args:
-        path: path to which directories will be created. Note that path
-            itself will not be created.
-    """
-    try:
-        os.makedirs(six.text_type(fool.files.FoolPath(path).dirname()))
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise exception
-        else:
-            pass
 
 
 class ConfigDirectories(object):
@@ -72,7 +55,7 @@ class ConfigDirectories(object):
 
             OSError if the directory exists or could not be created.
         """
-        create_subdirs(self.config_dir)
+        fool.files.create_subdirs(self.config_dir)
         print('creating directory {}'.format(self.config_dir))
         os.mkdir(str(self.config_dir), self.directory_mode)
 
@@ -86,7 +69,7 @@ class ConfigDirectories(object):
 
             OSError if the directory exists or could not be created.
         """
-        create_subdirs(self.data_dir)
+        fool.files.create_subdirs(self.data_dir)
         print('creating directory {}'.format(self.data_dir))
         os.mkdir(str(self.data_dir), self.directory_mode)
 
@@ -129,6 +112,6 @@ class ConfigFile(object):
         """Create an empty configuration file if it does not exist.
         """
         self.prepare_write()
-        create_subdirs(self._path)
+        fool.files.create_subdirs(self._path)
         with self.path.open('w') as configfile:
             self.configparser.write(configfile)

@@ -9,6 +9,7 @@ import os.path
 import unittest
 
 import fool.conf
+import fool.files
 import fool.xdg
 
 import tests.util
@@ -54,7 +55,7 @@ class UnitTest(unittest.TestCase):
         self.assertEqual(conf_file.path, '/hello/world')
 
     def test_can_create_new_configfile_in_existing_directory(self):
-        with tests.util.temporary_directory() as tempdir:
+        with fool.files.temporary_directory() as tempdir:
             conf_file = fool.conf.ConfigFile('world', tempdir)
             self.assertFalse(conf_file.exists())
             conf_file.write()
@@ -63,7 +64,7 @@ class UnitTest(unittest.TestCase):
             self.assertTrue((fool.files.FoolPath(tempdir) / 'world').isfile)
 
     def test_can_create_new_configfile(self):
-        with tests.util.temporary_directory() as tempdir:
+        with fool.files.temporary_directory() as tempdir:
             conf_file = fool.conf.ConfigFile('a/b', tempdir)
             self.assertFalse(conf_file.exists())
             conf_file.write()

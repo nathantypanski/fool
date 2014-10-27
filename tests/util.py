@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 
 import contextlib
 import shutil
-import tempfile
 import os
 
 from six.moves import map
@@ -16,14 +15,6 @@ import fool.group
 import fool.files
 
 @contextlib.contextmanager
-def temporary_directory(*args, **kwargs):
-    d = tempfile.mkdtemp(*args, **kwargs)
-    try:
-        yield fool.files.FoolPath(d)
-    finally:
-        shutil.rmtree(d)
-
-@contextlib.contextmanager
 def temporary_config(*args, **kwargs):
     """ Create a temporary XDG configuration """
     borg_objects = [fool.xdg.XDGConfig,
@@ -32,7 +23,7 @@ def temporary_config(*args, **kwargs):
     try:
         for obj in borg_objects:
             obj.clear_state()
-        with temporary_directory() as tempdir:
+        with fool.files.temporary_directory() as tempdir:
             xdg = fool.xdg.XDGConfig()
             xdg.home = tempdir
             assert not xdg.home.startswith(os.environ['HOME'])

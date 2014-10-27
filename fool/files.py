@@ -3,10 +3,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import contextlib
+import errno
 import os
 import os.path
+import shutil
 
 import six
+
+import tempfile
+
 
 class FoolPath(object):
     """Wrapper around os.path for ease of use."""
@@ -164,6 +170,10 @@ class FoolPath(object):
         """Create a symbolic link pointing to this path named link_name."""
         return os.symlink(six.text_type(self.pathname), six.text_type(link_name))
 
+    def rename(self, dest_name):
+        """Rename this file to dest_name."""
+        return os.rename(self.pathname, six.text_type(dest_name))
+
     def startswith(self, value):
         return self.pathname.startswith(value)
 
@@ -205,3 +215,34 @@ class FoolPath(object):
 
     def __truediv__(self, other):
         return self.__div__(other)
+
+
+@contextlib.contextmanager
+def temporary_directory(*args, **kwargs):
+    """Create a temporary directory with the supplied arguments.
+
+    Yields:
+        A temporary directory that will be removed upon context exit.
+    """
+    d = tempfile.mkdtemp(*args, **kwargs)
+    try:
+        yield FoolPath(d)
+    finally:
+        shutil.rmtree(d)
+
+
+def create_subdirs(path):
+    """Create necessary subdirectories leading up to path.
+
+    Args:
+        path: path to which directories will be created. Note that path
+            itself will not be created.
+    """
+    try:
+        os.makedirs(six.text_type(FoolPath(path).dirname()))
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise exception
+        else:
+            pass
+

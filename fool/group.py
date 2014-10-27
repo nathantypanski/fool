@@ -189,6 +189,10 @@ class Group(object):
             gobj = GroupObject(path, self.destination / relpath)
             yield gobj
 
+    def sync(self):
+        for group_object in self.group_objects():
+            group_object.sync()
+
     def __repr__(self):
         return ('Group(name={}, source={}, destination={})'
                 .format(self.name, self.source, self.destination))

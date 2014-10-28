@@ -12,15 +12,13 @@ from six.moves import map
 
 import fool.xdg
 import fool.conf
-import fool.group
 import fool.files
 
 @contextlib.contextmanager
 def temporary_config(*args, **kwargs):
     """ Create a temporary XDG configuration """
     borg_objects = [fool.xdg.XDGConfig,
-                    fool.conf.ConfigDirectories,
-                    fool.group.GroupListConfig]
+                    fool.conf.ConfigDirectories]
     old_cwd = os.getcwd()
     try:
         for obj in borg_objects:

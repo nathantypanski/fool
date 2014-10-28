@@ -6,21 +6,17 @@ from __future__ import unicode_literals
 
 import fool.conf
 
-class Section(object):
-    """A section is a group of files that get symlinked to the same root.
+class Section(fool.objects.DirectoryObject):
+    """A section of files in the filesystem.
 
-    Sections are the elements that comprise a Chapter.
+    A section is an abstract "collection" of files that have an associated
+    destination directory.
     """
 
     def __init__(self, name):
-        self.dirconfig = fool.conf.ConfigDirectories()
-        self._name = name
-
-    @property
-    def name(self):
-        """Name of this section."""
-        return self._name
-
-    def rename(self, newname):
-        """Rename this section."""
-        self._name = newname
+        conf = fool.conf.ConfigDirectories()
+        def dirpath_func(name):
+            """The path to the section."""
+            path = (conf.section_dir / name).normpath().abspath()
+            return path
+        super(Section, self).__init__(name, dirpath_func)

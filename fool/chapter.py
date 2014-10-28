@@ -21,8 +21,3 @@ class Chapter(fool.objects.DirectoryObject):
             path = (conf.chapter_dir / name).normpath().abspath()
             return path
         super(Chapter, self).__init__(name, dirpath_func)
-
-
-class ChapterExistsError(Exception):
-    """Error raised when a chapter exists and an overwrite is attempted."""
-    pass

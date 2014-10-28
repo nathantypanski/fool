@@ -30,3 +30,8 @@ class UnitTest(unittest.TestCase):
             self.assertEqual(chapter.dirpath, path)
             self.assertTrue(path.exists())
             self.assertTrue(path.isdir())
+
+    def test_create_two_chapters_with_same_name(self):
+        with tests.util.temporary_config() as xdg_config:
+            chapter_a = fool.chapter.Chapter('Test')
+            chapter_b = fool.chapter.Chapter('Test')

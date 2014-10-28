@@ -9,6 +9,43 @@ import six
 
 import fool.files
 
+class DirectoryObject(object):
+    """An object that is tied by name to a directory.
+
+    Args:
+        name: the name of this object
+        dirpath_func: a function that calculates a directory path,
+            given a name. Defaults to the name.
+    """
+
+    def __init__(self, name, dirpath_func=None):
+        self._name = name
+        if dirpath_func is None:
+            dirpath_func = lambda x: x
+        self._dirpath_func = dirpath_func
+        self._make_exist()
+
+    @property
+    def name(self):
+        """Name of this DirectoryObject."""
+        return self._name
+
+    @property
+    def dirpath(self):
+        """Path to the directory assocated with this DirectoryObject."""
+        return self._dirpath_func(self.name)
+
+    def _make_exist(self):
+        if not self.dirpath.exists():
+            fool.files.create_subdirs(self.dirpath)
+            self.dirpath.mkdir()
+
+    def rename(self, newname):
+        """Rename this DirectoryObject."""
+        self.dirpath.rename(self._dirpath_func(newname))
+        self._name = newname
+
+
 class GroupObject(object):
     """An object for syncing with fool.
 

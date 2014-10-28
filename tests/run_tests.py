@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 
 import unittest
 
+import tests.chapter_test
 import tests.conf_test
 import tests.conflicts_test
 import tests.files_test

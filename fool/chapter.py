@@ -35,26 +35,35 @@ class Chapter(PureChapter):
     def __init__(self, name):
         super(Chapter, self).__init__(name)
         fool.files.create_subdirs(self.dirpath)
+        self._make_exist()
+
+    def _make_exist(self):
         if not self.dirpath.exists():
             self.dirpath.mkdir()
 
     @property
     def dirpath(self):
         """The path to the chapter."""
-        path = (self.dirconfig / self.name).normpath().abspath()
+        path = (self.dirconfig.chapter_dir / self.name).normpath().abspath()
         return path
 
     def rename(self, newname):
         """Rename this chapter."""
+        oldname = self.name
+        oldpath = self.dirpath
+        super(Chapter, self).rename(newname)
         try:
-            self.dirpath.rename(newname)
+            oldpath.rename(self.dirpath)
         except OSError as exception:
             if exception.errno == errno.EEXIST:
                 msg = 'Chapter {} already exists'.format(self.name)
                 raise ChapterExistsError(msg)
             else:
+                super(Chapter, self).rename(oldname)
                 six.reraise(*sys.exc_info())
-        super(Chapter, self).rename(newname)
+        except Exception:
+            super(Chapter, self).rename(oldname)
+            six.reraise(*sys.exc_info())
 
 class ChapterExistsError(Exception):
     """Error raised when a chapter exists and an overwrite is attempted."""

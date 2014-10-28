@@ -21,6 +21,7 @@ class AllTests(unittest.TestSuite):
     def suite(self):
         loader = unittest.defaultTestLoader
         self.addTests([
+            loader.loadTestsFromModule(tests.chapter_test),
             loader.loadTestsFromModule(tests.conf_test),
             loader.loadTestsFromModule(tests.conflicts_test),
             loader.loadTestsFromModule(tests.files_test),

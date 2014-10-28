@@ -46,6 +46,11 @@ class ConfigDirectories(object):
         return self.xdg_config.config_home / 'fool' / 'chapters'
 
     @property
+    def section_dir(self):
+        """fool's section list directory"""
+        return self.xdg_config.config_home / 'fool' / 'sections'
+
+    @property
     def group_list_path(self):
         """fool's group list config file"""
         return self.config_dir / 'groups'

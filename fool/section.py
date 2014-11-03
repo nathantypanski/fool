@@ -6,8 +6,8 @@ from __future__ import unicode_literals
 
 import fool.conf
 
-class Section(fool.objects.DirectoryObject):
-    """A section of files in the filesystem.
+class SectionDirectory(fool.objects.DirectoryObject):
+    """A directory containing information about a fool section.
 
     A section is an abstract "collection" of files that have an associated
     destination directory.
@@ -19,4 +19,4 @@ class Section(fool.objects.DirectoryObject):
             """The path to the section."""
             path = (conf.section_dir / name).normpath().abspath()
             return path
-        super(Section, self).__init__(name, dirpath_func)
+        super(self.__class__, self).__init__(name, dirpath_func)

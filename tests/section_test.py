@@ -18,3 +18,5 @@ class UnitTest(unittest.TestCase):
             srcdir.mkdir()
             with a.open('w') as textfile:
                 textfile.write('hello')
+            expected_section_dir = xdg_config.config_home / 'fool' / 'sections'
+            self.assertFalse(expected_section_dir.exists())

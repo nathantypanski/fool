@@ -35,6 +35,9 @@ class DirectoryObject(object):
         """Path to the directory assocated with this DirectoryObject."""
         return self._dirpath_func(self.name)
 
+    def contents(self):
+        return self.dirpath.walk_files()
+
     def _make_exist(self):
         if not self.dirpath.exists():
             fool.files.create_subdirs(self.dirpath)
